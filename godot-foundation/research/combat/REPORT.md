@@ -1,6 +1,6 @@
 # Combat Lab — Independent Godot Foundation v0.3 feature research
 
-**Date:** 2026-11-07 JST. **Branch:** `research/combat`. **Baseline:** `main` commit `f612435b7aa1c05be607bdb975d123367eaa4819`. **Status:** working research prototype and tests complete; **nothing adopted into main**.
+**Date:** 2026-11-07 JST. **Branch:** `research/combat`. **Baseline:** `main` commit `f612435b7aa1c05be607bdb975d123367eaa4819`. **Status:** natural-encounter second pass tested; **nothing adopted into main**.
 
 ## Purpose and source checks
 
@@ -20,7 +20,7 @@ The four baseline weapon Resources remain unchanged: standard/long cannon and st
 ## Prototype implemented
 
 - `CombatResearch.tscn` runs a research-only scene. `combat_main.gd` extends the **real** Foundation `ui/main.gd`. The scene keeps the native exploration, world graphics, maps, facilities, equipment, growth, save, and user-input handling.
-- `combat_session.gd` extends the **real** `core/session.gd`; the experimental flag defaults OFF. For fast enemies it adjusts sideways movement before delegating to the original `_enemies(dt)`; for heavy enemies it delays a ready attack and exposes a `windup` indicator. Both types return to their base behavior when the flag is off, except that an already-set experimental windup marker is not automatically cleared.
+- `combat_session.gd` extends the **real** `core/session.gd`; the experimental flag defaults OFF. For fast enemies it adjusts sideways movement before delegating to the original `_enemies(dt)`; for heavy enemies it delays a ready attack and exposes a `windup` indicator. Both types return to their base behavior when the flag is off. Follow-up research fixes a real travel-tick timing issue and now clears transient windup markers when disabling patterns or loading a save.
 - `pattern_profile.gd` and two Resource files (`data/fast_pattern.tres` and `data/heavy_pattern.tres`) hold independent experimental tuning values. The existing enemy/weapon Resources remain authoritative for actual stats.
 - `combat_readout.gd` computes read-only per-enemy distance, HP, type, wait/patrol status, reach, cooldown, and risk. It reads existing equipped weapon Resources and upgrade-adjusted stats. An incoming hostile shot increases **global** danger only: existing shot data cannot reliably identify which enemy fired.
 - `combat_hud.gd` adds a CanvasLayer warning HUD showing the currently firing weapon, weapon ranges and damage, own attack cooldown, number of detected enemies, hostile shots, and closest enemies. It reuses `enemy_card.tscn` as a PackedScene for up to five enemy HP/range cards. `enemy_card.gd` demonstrates an AnimationPlayer warning pulse; the HUD uses a Tween to float and fade received-damage text.
@@ -30,7 +30,7 @@ The four baseline weapon Resources remain unchanged: standard/long cannon and st
 
 Godot runtime: **4.7.2.stable.official.ed1daf0bf** on Linux. ChatGPT's isolated temporary workspace obtained the Godot binary from the user's Library and verified `--headless --version`. Local HTTPS `git clone` was not possible due to DNS isolation, so GitHub's connected API created the research branch and files. An **ephemeral GitHub Actions checkout dedicated to this branch** ran the complete original Foundation with the exact same Godot version, rather than using any investigator's PC/worktree.
 
-The final successful CI run is [GitHub Actions run #42288888905](https://github.com/cp-base/cloud-probe/actions/runs/42288888905). Direct logs are retained under `evidence/`, including editor import and all four test logs. The screenshot at `evidence/fixture.png` was captured from the actual Godot research scene with Xvfb/Mesa llvmpipe at **1180 × 760**. CI installed Noto CJK for correct Japanese glyphs; no font binaries are bundled into the repository.
+The first-pass successful CI run was [GitHub Actions run #42288888905](https://github.com/cp-base/cloud-probe/actions/runs/42288888905). Direct logs are retained under `evidence/`, including editor import and all four test logs. The screenshot at `evidence/fixture.png` was captured from the actual Godot research scene with Xvfb/Mesa llvmpipe at **1180 × 760**. CI installed Noto CJK for correct Japanese glyphs; no font binaries are bundled into the repository.
 
 | Check | Result | What was actually verified |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ The final successful CI run is [GitHub Actions run #42288888905](https://github.
 | New fixture UI tests | **8 / 8 PASS** | Research scene, no-save fixture, shared Session, four enemy instances/cards, pattern-button signals |
 | GUI render/capture | **PASS** | Godot actually rendered `CombatResearch.tscn`, 1180×760 screenshot saved |
 
-**Total: 71 / 71 automated checks successful.** The screenshot and programmatic button signals establish integrated operation; they are not a human comprehension/playability study. The dense 4-enemy fixture is not representative of naturally generated encounter density.
+**First pass: 71 / 71 automated checks successful.** The screenshot and programmatic button signals establish integrated operation; they are not a human comprehension/playability study. The dense 4-enemy fixture is not representative of naturally generated encounter density.
 
 Run from the checked-out `godot-foundation/` directory:
 
@@ -51,6 +51,55 @@ godot --path . res://research/combat/CombatResearch.tscn -- --fixture
 godot --headless --path . --script res://tests/test_combat_research.gd
 godot --headless --path . --script res://tests/test_combat_ui.gd -- --fixture
 ```
+
+
+## Second pass: naturally generated encounter and live combat timing (2026-11-07)
+
+The first pass proved an injected four-enemy fixture. The second pass asks whether **actual Foundation travel** can approach naturally spawned enemies, fight with the existing weapon system, and expose optional heavy/fast behavior.
+
+**Experimental extensions, isolated to this branch:**
+- Added `--journey`: fresh deterministic campaign, ordinary `World.reset_sortie()` generated enemy and ordinary `Session.tick()` travel. No injected four-enemy fixture; saves intentionally disabled in this visual mode. Ordinary launch remains the unchanged normal save-based flow.
+- Added autonomous steering via **test-only calls to `Session.tick(dt, forward, turn)`**. This simulates input/game logic, not actual human interactive play. Seed search found one naturally generated start encounter of each type, then tested experimental patterns both OFF and ON.
+- HUD now starts compact in ordinary travel and expands into scrollable enemy cards using the `詳細` button. Four-enemy fixture stays expanded. Captured real Godot GUI with both presentation states at ~540p.
+- **Important defect discovered:** an optional `CombatSession._enemies()` override passed the direct unit test, but the inherited Foundation `Session.tick()` did not invoke that override as originally expected. The real encounter timing check therefore caught a mismatch missed by first-pass fixture tests. Corrected by explicitly applying experimental patterns in the research `tick()` wrapper before `super.tick()`.
+- **Additional edge case:** testing only the current distance and zero cooldown missed the frame in which the base tick moves an enemy into range or decrements its cooldown to zero. Corrected the warning trigger with a one-frame look-ahead, and added a regression test. Turning experiments OFF and loading an experimental mid-telegraph save now clear the transient `windup` flag; this is a research restore policy, not a settled production rule.
+
+**Last verified CI:** [GitHub Actions #42295474200](https://github.com/cp-base/cloud-probe/actions/runs/42295474200), Godot **4.7.2** on a branch-only ephemeral Linux runner, **success**. Import, headless checks and graphical captures all succeeded.
+
+| Verification | Checks | Result |
+| --- | ---: | --- |
+| Original Foundation session regression | 42 | PASS |
+| Original Foundation UI regression | 6 | PASS |
+| Combat research unit/integration | 19 | PASS |
+| Fixture scene and toggles | 8 | PASS |
+| 4 naturally generated start types × patterns OFF/ON (incl. timing/persistence) | 84 | PASS |
+| Journey scene/UI, held move control, compact/expanded height | 9 | PASS |
+| **Total** | **168** | **168 PASS / 0 FAIL** |
+| Godot GUI captures | 1180×760, 838×540 compact & expanded | PASS |
+
+**Normal starter-encounter sample, basic equipment, same auto-steering:** fixtures were *not* injected for these four trials. These numbers describe the particular seeds and driving strategy below, not general balance.
+
+| Enemy type | Seed | OFF result | ON result |
+| --- | ---: | --- | --- |
+| melee | 71129 | Win; remaining player HP 3 / 45 | Win; HP 3 / 45 |
+| artillery | 71130 | Win; HP 5 / 45 | Win; HP 5 / 45 |
+| fast | 71127 | Win; HP 37 / 45 | Win; HP 37 / 45; slight positional deviation |
+| heavy | 71131 | Loss; enemy HP 113 / 140 | Loss; enemy HP 104 / 140 |
+
+Measured **heavy first hostile shot**: `21.05 s` with patterns OFF; `22.15 s` with patterns ON, a **1.10 s** delay. The ON trial recorded the warning condition for 44 physics steps. Both trials still ended in player defeat, so *a telegraph working* does not imply a balanced or fair encounter. The small fast-type sidestep was not sufficiently influential under this steering strategy to change the outcome.
+
+**Reproduction from `godot-foundation/`:**
+
+```sh
+godot --path . res://research/combat/CombatResearch.tscn -- --journey
+godot --path . res://research/combat/CombatResearch.tscn -- --journey --patterns
+godot --headless --path . --script res://tests/test_combat_journey.gd
+godot --headless --path . --script res://tests/test_combat_journey_ui.gd -- --journey
+```
+
+**Evidence:** `evidence/test_combat_journey.log`, `evidence/test_combat_research.log`, `evidence/test_combat_journey_ui.log`, `evidence/journey_540p.png`, `evidence/journey_detail_540p.png`, and `evidence/fixture.png` are retained in this research branch. GUI capture uses Xvfb/Mesa software rendering; the narrower internal width comes from the unchanged Godot viewport/stretch configuration. The CI had a temporary font-install stall; the branch-local workflow now has bounded installation times. That operational issue is separate from combat logic.
+
+**Integration assessment:** the collapsible HUD can be ported with limited dependency changes; optional movement and telegraph timing need careful migration and tests against the production update loop. The strongest generalizable lesson from the follow-up is to test **real entry-point interactions and tick execution**, not only direct helper calls. No AI/balance rule or GUI layout has been proposed as a mandated game design.
 
 ## How to add enemy and weapon types later
 
@@ -70,14 +119,14 @@ godot --headless --path . --script res://tests/test_combat_ui.gd -- --fixture
 
 - Godot ran headlessly and with an Xvfb GUI; human manual movement and perception testing was **not performed**.
 - Current warning is an approximation from ranges, cooldown and projectiles; it does not forecast every hit. Incoming projectiles are a **global** caution because base shot metadata does not identify their origin enemy.
-- A `windup` entry created under experimental behavior may remain in a saved world when that experiment is subsequently disabled; baseline code ignores it but a formal save contract would be necessary before merging AI changes.
-- The HUD covers some floating labels when enemies appear behind its translucent panel. It does not remove the map, but 1180×760 is the only captured resolution. Compare smaller windows and real encounter density.
+- A `windup` entry is saved with experimental world state. The research `CombatSession` now clears it when disabling patterns and on successful load; before integration, the team should still decide whether a mid-windup save ought to resume the warning instead of clearing it.
+- The HUD may cover floating labels when enemies appear behind its panel. The second pass added a collapsible/scrollable view and recorded both 1180×760 and an actual 838×540 viewport (requested as 960×540 due stretch settings). Visual reading tests with human players remain outstanding.
 - Danger thresholds and the numbers in the two experimental `.tres` have not been play-balanced; `--fixture` positions are controlled/injected.
 - The present warning animation is coded into an AnimationPlayer at runtime; an authored animation in `.tscn` may be easier for artists, whereas Tween is concise for one-shot hit numbers.
-- Future tests: actual pointer/key input, close-range repeated attacks, hostile projectile attribution, viewport scaling, reload during windup, and player usability study.
+- Future tests: actual physical human pointer/key play, close-range repeated attacks, hostile projectile attribution, viewport scaling across more sizes, deterministic restored-windup policy, and player usability study.
 
 ## Exact change boundary
 
-**Added under this branch only:** `godot-foundation/research/combat/` (research scene, scripts, Resources, README, report and evidence); `godot-foundation/tests/test_combat_research.gd`; `godot-foundation/tests/test_combat_ui.gd`; `.github/workflows/combat-research.yml`.
+**Added under this branch only:** `godot-foundation/research/combat/` (research scene, scripts, Resources, README, report and evidence); `godot-foundation/tests/test_combat_research.gd`; `godot-foundation/tests/test_combat_ui.gd`; `godot-foundation/tests/test_combat_journey.gd`; `godot-foundation/tests/test_combat_journey_ui.gd`; `.github/workflows/combat-research.yml`.
 
 **Not changed:** `main`, `index.html`, old `godot/`, original Foundation `Main.tscn`, `project.godot`, `core/`, `ui/`, `data/`, shared `STATUS.md`, `DECISIONS.md`, or `HISTORY.md`. No merge or production adoption has been performed.
