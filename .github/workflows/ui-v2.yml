@@ -23,6 +23,16 @@ jobs:
         run: /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-foundation --script res://tests/ui_layout_smoke.gd
       - name: New compact UI tests
         run: /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-foundation --script res://tests/ui_compact_smoke.gd
+      - name: Real mouse interaction with SubViewport
+        run: /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-foundation --script res://tests/ui_mouse_smoke.gd
+      - name: Render UI preview screenshots
+        run: xvfb-run -a /tmp/Godot_v4.7.2-stable_linux.x86_64 --path godot-foundation --script res://tests/ui_v2_capture.gd
+      - name: Upload rendered UI screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-v2-screenshots
+          path: godot-foundation/research/ui-v2/evidence/*.png
+          if-no-files-found: error
       - name: Foundation UI integration
         run: /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --path godot-foundation --script res://tests/ui_foundation_integration.gd
       - name: Baseline UI regression
