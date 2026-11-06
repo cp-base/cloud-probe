@@ -63,6 +63,14 @@ func run()->void:
     real_heavy["cooldown"]=0.0
     active.set_patterns_enabled(true)
     active.tick(0.05,0.0,0.0)
+    var edge:RefCounted=Session.new();edge.depart("base");edge.world.objects.clear()
+    var edge_heavy:Dictionary=enemy_at(edge,"heavy",Vector2(0,-35.15),0.02)
+    edge.set_patterns_enabled(true)
+    edge.tick(0.05,1.0,0.0)
+    var has_hostile_shot:bool=false
+    for shot:Dictionary in edge.projectiles:
+        if bool(shot["hostile"]):has_hostile_shot=true
+    check(bool(edge_heavy.get("windup",false)) and not has_hostile_shot,"frame-boundary crossing starts heavy warning before actual projectile")
     var during_path:="res://tests/.state/heavy-mid-windup.json"
     var during_saved:bool=active.save_game(during_path)
     var active_loaded:RefCounted=Session.new()

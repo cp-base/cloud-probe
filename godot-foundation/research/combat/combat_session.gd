@@ -45,8 +45,12 @@ func _apply_patterns(dt:float)->void:
             var direction:float=1.0 if sin(campaign.world_time*1.6+float(enemy.get("phase",0.0)))>=0 else -1.0
             enemy["pos"]+=side*direction*FastPattern.sidestep_speed*dt
         if enemy["type"]==HeavyPattern.id:
-            var in_range:bool=distance<=maxf(profile.melee_range,profile.ranged_range)
-            if not bool(enemy.get("windup",false)) and in_range and float(enemy["cooldown"])<=0.0:
+            # Look one frame ahead: the inherited tick first moves the player/enemy and
+            # decrements cooldown before it checks for attacks. Exact-edge checks
+            # otherwise let naturally moving foes bypass the telegraph entirely.
+            var imminent_reach:float=maxf(profile.melee_range,profile.ranged_range)+(profile.speed+speed())*dt
+            var in_range:bool=distance<=imminent_reach
+            if not bool(enemy.get("windup",false)) and in_range and float(enemy["cooldown"])<=dt:
                 enemy["windup"]=true
                 enemy["cooldown"]=HeavyPattern.telegraph_seconds+dt
             elif bool(enemy.get("windup",false)) and float(enemy["cooldown"])<=dt:
