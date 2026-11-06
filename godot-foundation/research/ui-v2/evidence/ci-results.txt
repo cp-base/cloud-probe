@@ -1,0 +1,21 @@
+CLOUD / PROBE UI v2 – verified 2026-11-07 JST
+Branch: research/ui-v2
+Baseline main commit: f612435b7aa1c05be607bdb975d123367eaa4819
+GitHub Actions: https://github.com/cp-base/cloud-probe/actions/runs/42304817753
+CI Godot 4.7.2
+UI_RESEARCH_RESULT checks=23 failures=0
+UI_COMPACT_RESULT checks=51 failures=0
+UI_MOUSE_RESULT checks=10 failures=0
+UI_INTEGRATION_RESULT checks=12 failures=0
+UI_RESULT checks=6 failures=0
+RESULT checks=42 failures=0
+TOTAL checks=144 failures=0
+UI_V2_CAPTURE_RESULT images=5 failures=0
+Local isolated source snapshot + library Godot 4.7.2: same 144 checks, all pass
+Local GUI with Noto Sans CJK JP + Xvfb OpenGL:
+UI_V2_CAPTURE_RESULT images=5 failures=0
+UI_V2_LIVE_RESULT images=2 failures=0
+Main scene: FOUNDATION_READY phase=docked load=missing speed=6.0 fuel=100
+Departure: SESSION 起点ステーションから出発。
+CI samples: JP glyphs missing on stock Ubuntu, not representative of Japanese font-capable environment.
+Screen images are CI artifacts and separately delivered local evidence ZIP.
