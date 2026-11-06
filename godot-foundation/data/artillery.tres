@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProbeEnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/enemy_profile.gd" id="1"]
+[resource]
+script=ExtResource("1")
+id="artillery"
+title="砲撃型"
+hp=45.0
+damage=10.0
+speed=2.4
+ranged_range=65.0
+melee_range=6.0
+interval=2.8
+keep_distance=26.0
+color=Color(1, 0.55, 0.3, 1)
+shape=1

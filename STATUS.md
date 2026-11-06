@@ -1,5 +1,23 @@
 # cloud-probe の現在地
 
+更新：2026-11-07。現在の制作対象は **Godot全体模型 Foundation v0.2**。
+
+## Godot全体模型の現在地
+
+- 本体：[godot-foundation/](godot-foundation/README.md)。従来の`godot/`は比較版として保持。
+- 探索・回収・遠近自動戦闘・深度で強くなる敵4種・帰還と恒久成長を接続。
+- 固定施設の発見・建設・出発選択、交易1品、調査派遣1枠、地図とメモ、探索途中の保存・再開を実装。
+- 初期速度6、一般生成は480四方に最大1対象。補給なしの初期航続250。数値は調整前の仮置き。
+- ローカルのGodot 4.7.2で処理36項目＋UI5項目を通過。実画面でも初期航行→回収→旅先施設→燃料切れ帰還→改修→再起動を確認。
+- **未確認・保留**：通常の10000到達、長期の経済・逃走・配置のバランス、純2D表示への交換、世界観と美術、アイテム生成・ドロップ。
+
+[設計と制作記録](docs/godot-foundation/README.md)／[検証の条件と限界](docs/godot-foundation/cloud-probe-validation.md)／[起動・操作](docs/godot-foundation/cloud-probe-prototype-guide.md)
+
+以下は以前のHTML Ver.5の記録です。Godot全体模型の実装状況とは分けて参照してください。
+
+<details>
+<summary>HTML Ver.5の実装・確認記録（2026-11-06）</summary>
+
 更新日：2026-11-06。基準：**CLOUD / PROBE 05**。
 
 ## 何を作っているか
@@ -55,3 +73,5 @@ AIが探索する抽象的なクラウド世界を舞台に、**自由座標で�
 - [未実装・検討候補](docs/CANDIDATES.md)
 - [決定・仮採用・未定の整理](DECISIONS.md)
 - [作業ルールのひな型（未設定）](docs/WORKING_RULES.md)
+
+</details>

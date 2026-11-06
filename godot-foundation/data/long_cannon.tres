@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ProbeWeaponProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/weapon_profile.gd" id="1"]
+[resource]
+script=ExtResource("1")
+id="long_cannon"
+title="長射程砲"
+slot="ranged"
+reach=78.0
+damage=7.0
+interval=2.4
+price=8

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProbeEnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/enemy_profile.gd" id="1"]
+[resource]
+script=ExtResource("1")
+id="melee"
+title="近接型"
+hp=60.0
+damage=14.0
+speed=4.8
+ranged_range=0.0
+melee_range=7.0
+interval=1.8
+keep_distance=0.0
+color=Color(1, 0.25, 0.4, 1)
+shape=0

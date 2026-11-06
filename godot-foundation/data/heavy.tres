@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProbeEnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/enemy_profile.gd" id="1"]
+[resource]
+script=ExtResource("1")
+id="heavy"
+title="重装型"
+hp=140.0
+damage=26.0
+speed=2.2
+ranged_range=35.0
+melee_range=8.0
+interval=3.5
+keep_distance=0.0
+color=Color(0.85, 0.45, 1, 1)
+shape=3

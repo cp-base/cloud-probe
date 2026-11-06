@@ -1,0 +1,5 @@
+.godot/
+.local/*
+!.local/.gdignore
+tests/.state/*
+!tests/.state/.gdignore

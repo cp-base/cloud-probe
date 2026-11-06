@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProbeEnemyProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://data/enemy_profile.gd" id="1"]
+[resource]
+script=ExtResource("1")
+id="fast"
+title="高速型"
+hp=30.0
+damage=8.0
+speed=9
+ranged_range=0.0
+melee_range=7.0
+interval=1.15
+keep_distance=0.0
+color=Color(1, 0.3, 0.7, 1)
+shape=2

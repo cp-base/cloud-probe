@@ -1,6 +1,6 @@
 # 開発履歴（HISTORY）
 
-この文書は **2026-11-06の会話と試作成果**を整理した時系列記録。実装の現状は [STATUS.md](STATUS.md)、検討候補は [docs/CANDIDATES.md](docs/CANDIDATES.md)、判断の状態は [DECISIONS.md](DECISIONS.md) を参照。
+この文書は **2026-11-06以降の会話と試作成果**を整理した時系列記録。実装の現状は [STATUS.md](STATUS.md)、検討候補は [docs/CANDIDATES.md](docs/CANDIDATES.md)、判断の状態は [DECISIONS.md](DECISIONS.md) を参照。
 
 ## 2026-11-06｜構想・先行事例
 
@@ -48,3 +48,12 @@
 ---
 
 **履歴は会話中の出来事と試作の記録**。ここに書かれた試作値・案が、最終仕様として決まったことを意味しない。
+
+## 2026-11-07｜Godot全体模型の土台と共有
+
+- 局所模型を作り続ける段階から、分かっている範囲の全体設計を作り、一つの土台を育てる方針へ移行。
+- ユーザー確認：今回作るものを土台とし、使える部品は使うが旧模型へ無理に寄せない。
+- `godot-foundation/`を作成。描画部品を再利用し、ゲーム状態・世界・戦闘・UI・保存を全体設計に合わせて構成。
+- 世界・発見・戦闘・成長・施設と活動・保存を接続。処理36項目＋UI5項目と実画面の一周を確認。
+- ユーザーの依頼でソースと設計書・手順書・調査履歴・検証ログ・画面をGitHubで共有。
+- [今回の制作手順](docs/godot-foundation/cloud-probe-build-plan.md)／[検証記録](docs/godot-foundation/cloud-probe-validation.md)。仮の数値と保留事項は最終仕様として扱わない。
