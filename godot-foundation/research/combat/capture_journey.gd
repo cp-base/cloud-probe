@@ -30,9 +30,14 @@ func capture()->void:
     demo._sync_markers();demo._visuals(0.0)
     for i in range(20):await process_frame
     var img:Image=root.get_viewport().get_texture().get_image()
-    var relative:="res://research/combat/evidence/journey_960.png"
+    var relative:="res://research/combat/evidence/journey_540p.png"
     var full:String=ProjectSettings.globalize_path(relative)
     DirAccess.make_dir_recursive_absolute(full.get_base_dir())
     var code:int=img.save_png(full)
     print("JOURNEY_CAPTURE result=%d size=%dx%d steps=%d closest=%.2f enemy=%s enemy_hp=%.0f mode=%s path=%s" % [code,img.get_width(),img.get_height(),steps,closest,enemy["type"],enemy["hp"],game.attack_mode,relative])
-    quit(0 if code==OK and img.get_width()>=900 and steps>0 and closest<60.0 else 1)
+    demo.combat_hud.set_collapsed(false)
+    for i in range(8):await process_frame
+    var detailed:="res://research/combat/evidence/journey_detail_540p.png"
+    var detailed_result:int=root.get_viewport().get_texture().get_image().save_png(ProjectSettings.globalize_path(detailed))
+    print("JOURNEY_DETAIL_CAPTURE result=%d path=%s" % [detailed_result,detailed])
+    quit(0 if code==OK and detailed_result==OK and img.get_width()>=800 and img.get_height()==540 and steps>0 and closest<60.0 else 1)

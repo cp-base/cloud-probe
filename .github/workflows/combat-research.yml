@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           xvfb-run -a godot --path godot-foundation --rendering-method gl_compatibility --script res://research/combat/capture_fixture.gd -- --fixture | tee /tmp/capture.log
-      - name: Capture natural encounter at 960x540
+      - name: Capture naturally generated encounter at 540p (actual Godot viewport size logged)
         shell: bash
         run: |
           xvfb-run -a godot --path godot-foundation --rendering-method gl_compatibility --resolution 960x540 --script res://research/combat/capture_journey.gd -- --journey | tee /tmp/capture_journey.log

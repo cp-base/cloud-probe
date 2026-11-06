@@ -21,6 +21,9 @@ func run()->void:
     demo.combat_hud.toggle_button.pressed.emit()
     check(demo.combat_hud.collapsed,"HUD collapses via real button")
     check(demo.combat_hud.panel_bottom_for_height(540.0)<400.0,"compact HUD fits 540p vertical bounds")
+    demo.combat_hud.set_collapsed(false)
+    check(demo.combat_hud.panel_bottom_for_height(540.0)<=400.0 and demo.combat_hud.details.visible,"expanded enemy list is scrollable within 540p")
+    demo.combat_hud.set_collapsed(true)
     demo.held["forward"]=true
     var first:Vector2=game.position
     for i in range(25):await physics_frame
