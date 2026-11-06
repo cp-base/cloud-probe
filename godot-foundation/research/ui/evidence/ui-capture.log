@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf
+Xvfb + OpenGL Mesa llvmpipe, sample UI components (not actual gameplay)
+CAPTURE res://research/ui/evidence/hud-1180.png size=(1180,760) error=0
+CAPTURE res://research/ui/evidence/modal-1180.png size=(1180,760) error=0
+CAPTURE res://research/ui/evidence/hud-800.png size=(800,600) error=0

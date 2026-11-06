@@ -1,0 +1,193 @@
+[gd_scene format=3]
+
+[node name="Hud" type="CanvasLayer"]
+layer = 10
+
+[node name="Frame" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Flash" type="ColorRect" parent="Frame"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.8, 0.05, 0.12, 0)
+
+[node name="TopPanel" type="PanelContainer" parent="Frame"]
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 126.0
+
+[node name="Content" type="VBoxContainer" parent="Frame/TopPanel"]
+theme_override_constants/separation = 7
+
+[node name="Heading" type="Label" parent="Frame/TopPanel/Content"]
+text = "CLOUD / PROBE     /     FOUNDATION"
+theme_override_font_sizes/font_size = 21
+mouse_filter = 2
+
+[node name="Status" type="Label" parent="Frame/TopPanel/Content"]
+text = "準備中"
+mouse_filter = 2
+
+[node name="Actions" type="HFlowContainer" parent="Frame/TopPanel/Content"]
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
+
+[node name="Access" type="Button" parent="Frame/TopPanel/Content/Actions"]
+custom_minimum_size = Vector2(172, 38)
+text = "アクセス"
+focus_mode = 0
+
+[node name="Map" type="Button" parent="Frame/TopPanel/Content/Actions"]
+custom_minimum_size = Vector2(126, 38)
+text = "地図・記録"
+focus_mode = 0
+
+[node name="Save" type="Button" parent="Frame/TopPanel/Content/Actions"]
+custom_minimum_size = Vector2(88, 38)
+text = "保存"
+focus_mode = 0
+
+[node name="Pause" type="Button" parent="Frame/TopPanel/Content/Actions"]
+custom_minimum_size = Vector2(115, 38)
+text = "一時停止"
+focus_mode = 0
+
+[node name="Settings" type="Button" parent="Frame/TopPanel/Content/Actions"]
+custom_minimum_size = Vector2(88, 38)
+text = "設定"
+focus_mode = 0
+
+[node name="Reticle" type="Label" parent="Frame"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -16.0
+offset_right = 20.0
+offset_bottom = 16.0
+mouse_filter = 2
+text = "＋"
+theme_override_font_sizes/font_size = 23
+modulate = Color(0.7, 0.85, 0.9, 0.35)
+
+[node name="Guide" type="Label" parent="Frame"]
+offset_right = 220.0
+offset_bottom = 28.0
+mouse_filter = 2
+modulate = Color(0.7, 0.91, 0.92, 1)
+theme_override_font_sizes/font_size = 14
+
+[node name="MapPanel" type="PanelContainer" parent="Frame"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -199.0
+offset_top = 144.0
+offset_right = -16.0
+offset_bottom = 348.0
+mouse_filter = 2
+
+[node name="MapContent" type="VBoxContainer" parent="Frame/MapPanel"]
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Frame/MapPanel/MapContent"]
+text = "周辺探査"
+mouse_filter = 2
+
+[node name="MiniMap" type="Control" parent="Frame/MapPanel/MapContent"]
+custom_minimum_size = Vector2(148, 158)
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BottomPanel" type="PanelContainer" parent="Frame"]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -204.0
+offset_right = -16.0
+offset_bottom = -14.0
+
+[node name="Content" type="VBoxContainer" parent="Frame/BottomPanel"]
+theme_override_constants/separation = 6
+
+[node name="Meters" type="HFlowContainer" parent="Frame/BottomPanel/Content"]
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 3
+
+[node name="FuelText" type="Label" parent="Frame/BottomPanel/Content/Meters"]
+text = "燃料"
+mouse_filter = 2
+
+[node name="Fuel" type="ProgressBar" parent="Frame/BottomPanel/Content/Meters"]
+custom_minimum_size = Vector2(135, 22)
+show_percentage = false
+
+[node name="HPText" type="Label" parent="Frame/BottomPanel/Content/Meters"]
+text = "耐久"
+mouse_filter = 2
+
+[node name="HP" type="ProgressBar" parent="Frame/BottomPanel/Content/Meters"]
+custom_minimum_size = Vector2(135, 22)
+show_percentage = false
+
+[node name="Resources" type="Label" parent="Frame/BottomPanel/Content/Meters"]
+text = "回収 0  撃破 0"
+mouse_filter = 2
+
+[node name="Notice" type="Label" parent="Frame/BottomPanel/Content"]
+text = "航行準備中"
+autowrap_mode = 3
+mouse_filter = 2
+modulate = Color(1, 0.88, 0.65, 1)
+
+[node name="Controls" type="HFlowContainer" parent="Frame/BottomPanel/Content"]
+alignment = 1
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 5
+
+[node name="Left" type="Button" parent="Frame/BottomPanel/Content/Controls"]
+custom_minimum_size = Vector2(115, 39)
+text = "◀ 左旋回"
+focus_mode = 0
+
+[node name="Back" type="Button" parent="Frame/BottomPanel/Content/Controls"]
+custom_minimum_size = Vector2(115, 39)
+text = "▼ 後退"
+focus_mode = 0
+
+[node name="Forward" type="Button" parent="Frame/BottomPanel/Content/Controls"]
+custom_minimum_size = Vector2(115, 39)
+text = "▲ 前進"
+focus_mode = 0
+
+[node name="Right" type="Button" parent="Frame/BottomPanel/Content/Controls"]
+custom_minimum_size = Vector2(115, 39)
+text = "右旋回 ▶"
+focus_mode = 0
+
+[node name="Auto" type="Button" parent="Frame/BottomPanel/Content/Controls"]
+custom_minimum_size = Vector2(122, 39)
+text = "自動前進"
+toggle_mode = true
+focus_mode = 0
+
+[node name="Keys" type="Label" parent="Frame/BottomPanel/Content"]
+text = "W/S・↑↓ 前後   A/D・←→ 旋回   Space 停止/再開   E アクセス   M 地図"
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="Hint" type="Label" parent="Frame/BottomPanel/Content"]
+text = "砲撃と近接は自動。燃料切れ・敗北では出発施設へ戻り、成果を使って再挑戦できます。"
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="ResetDialog" type="ConfirmationDialog" parent="Frame"]
+initial_position = 1
+size = Vector2i(570, 170)
+dialog_text = "新しい世界を作ります。現在の進行は初期状態になります。"

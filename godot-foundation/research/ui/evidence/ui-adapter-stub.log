@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf
+UI adapter syntax and behavior on TEST-ONLY local base stub
+adapter constructs themed HUD PASS
+minimap references same session stub PASS
+meter references bind PASS
+access button reaches inherited callback PASS
+hold press sets state PASS
+hold release resets state PASS
+modal mounts with baseline body structure PASS
+modal pauses dummy session PASS
+modal title updates PASS
+close button invokes inherited closure PASS
+ADAPTER_STUB_RESULT checks=10 failures=0
+Not a full Foundation gameplay test. Test-only stub was not committed.

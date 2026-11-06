@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf
+UI component run, 2026-11-07, Linux headless
+HUD CanvasLayer / Control transparent input root: PASS
+header actions HFlowContainer: PASS
+movement buttons HFlowContainer: PASS
+meters HFlowContainer: PASS
+button signal: PASS
+modal 5 tabs: PASS
+modal body traversal convention: PASS
+shared Theme: PASS
+800x600: viewport 800x600; top (16,12)-(784,136); bottom (16,396)-(784,586); map (601,144)-(784,349); 5 checks PASS
+1180x760: viewport 1180x760; top (16,12)-(1164,136); bottom (16,556)-(1164,746); map (981,144)-(1164,349); 5 checks PASS
+1920x1080: viewport 1920x1080; top (16,12)-(1904,136); bottom (16,876)-(1904,1066); map (1721,144)-(1904,349); 5 checks PASS
+UI_RESEARCH_RESULT checks=23 failures=0
