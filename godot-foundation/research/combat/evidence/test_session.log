@@ -1,0 +1,108 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS seed/sortie/chunk: visit order independent
+PASS sparse generation: <=1 per 480 sector; gap >=150 (origin encounters excluded)
+PASS all four enemy types coexist in same world
+PASS wait and patrol coexist independently of combat type
+PASS one extra enemy near origin; nearby generation cannot duplicate it
+SESSION 起点ステーションで準備中。
+PASS initial reach far below 10000 and slow speed
+SESSION 起点ステーションから出発。
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 光を回収。+2 C / 燃料 +23
+PASS ordinary navigation auto-collects without a modal
+PASS collected light cannot pay twice
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 高速型の近接攻撃！ 耐久 −8
+SESSION 高速型の近接攻撃！ 耐久 −8
+SESSION 高速型を停止。成果 +1 C
+SESSION 到達記録更新：200。探索成果を獲得。
+SESSION 到達記録更新：300。探索成果を獲得。
+SESSION 燃料切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+PASS initial exploration fails/returns with usable permanent earnings
+SESSION 航続をLv.1へ改修。−4 C
+PASS earned currency purchases a real increase in travel range
+PASS remote facility cannot apply upgrades
+SESSION 起点ステーションから出発。
+PASS next departure uses upgraded full capacity
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS waiting and legacy enemies stay still outside detection
+PASS patroller moves without detecting player and turns within radius 30
+PASS pause stops patrol as well as pursuit
+PASS ranged weapon fires automatically
+PASS distance switch retains cooldown, cannot grant a free attack
+PASS melee weapon attacks automatically after cooldown
+SESSION 近接型を停止。成果 +1 C
+PASS dead enemy cannot pay twice
+SESSION 古い記録を回収。成果 +2 C
+PASS optional signal choice resolves and pays only once
+PASS depth strength is fixed at spawn, not scaled to player or pursuit
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 重装型の近接攻撃！ 耐久 −26
+SESSION 重装型の近接攻撃！ 耐久 −26
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 重装型の近接攻撃！ 耐久 −26
+SESSION 重装型を停止。成果 +1 C
+PASS same heavy enemy defeats initial ship but is beatable after growth (fixture)
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 施設を初発見：中継施設候補。成果 +3 C
+SESSION 施設を建設しました。−8 C
+PASS discover/build: pay once and register departure-capable facility
+SESSION 施設へ帰着。出発施設へ帰還しました。成果・改修・施設は保持。
+SESSION 中継施設候補から出発。
+PASS built relay can be selected as the next start
+SESSION 起点ステーションで準備中。
+PASS construction and selected departure survive save/reload
+SESSION test failure。出発施設へ帰還しました。成果・改修・施設は保持。
+PASS failure retains constructed facilities
+SESSION 現在地を記録しました。
+SESSION 地点メモを削除しました。
+PASS deleting a memo does not delete its facility
+SESSION 起点ステーションで準備中。
+SESSION 交易データを購入。−3 C
+PASS trade buys cargo with payment
+SESSION 交易データを売却。+2 C
+PASS same-place buy/sell does not create profit
+SESSION 交易データを購入。−3 C
+SESSION 交易データを購入。−3 C
+SESSION 交易データを購入。−3 C
+SESSION 積載上限です。
+PASS full cargo rejects purchase without taking money
+SESSION 交易データを売却。+2 C
+SESSION 交易データを売却。+2 C
+SESSION 交易データを売却。+2 C
+SESSION 交易データを購入。−3 C
+SESSION 起点ステーションから出発。
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 交易データを売却。+5 C
+PASS cargo can be carried and sold at another facility
+SESSION test。出発施設へ帰還しました。成果・改修・施設は保持。
+SESSION 調査担当へ依頼。航行中の90秒で結果が届きます。−3 C
+PASS survey: single slot prevents duplicate order
+SESSION 起点ステーションから出発。
+PASS pause does not advance simulation or survey
+SESSION 調査担当から報告が届きました。派遣施設で受領できます。
+PASS survey completes after 90 seconds of simulation
+SESSION test。出発施設へ帰還しました。成果・改修・施設は保持。
+SESSION 調査報告を受領：中継施設候補の位置を記録。
+PASS survey result can be claimed only once
+SESSION 現在地を記録しました。
+SESSION 交易データを購入。−3 C
+SESSION 起点ステーションから出発。
+SESSION 起点ステーションで準備中。
+PASS mid-flight save restores position, fuel, cooldown, projectile and enemy HP; resumes paused
+PASS save restores cargo, memo and claimed survey
+PASS save restores individual behavior and patrol direction
+PASS reloading cannot regenerate or recollect a used light in the same sortie
+PASS saved projectile resolves once after reload
+SESSION 起点ステーションで準備中。
+PASS unsupported save is rejected without overwriting original
+SESSION 到達記録更新：10000。探索成果を獲得。
+SESSION 10000の果てへ到達。到達記録を保存しました。
+PASS world boundary clamps and records arrival (injected boundary fixture)
+RESULT checks=42 failures=0

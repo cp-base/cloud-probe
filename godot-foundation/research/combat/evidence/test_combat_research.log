@@ -1,0 +1,21 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS COMBAT existing weapons read from equipped resources
+PASS COMBAT resource-driven readout melee
+PASS COMBAT resource-driven readout artillery
+PASS COMBAT resource-driven readout fast
+PASS COMBAT resource-driven readout heavy
+PASS COMBAT artillery warns in enemy range
+PASS COMBAT attack ready elevates danger
+PASS COMBAT base auto fire is unchanged
+PASS COMBAT nearby readout uses real session
+PASS COMBAT experimental fast sidestep changes lateral position
+PASS COMBAT heavy attack telegraph starts before hit
+PASS COMBAT telegraph visible to HUD
+PASS COMBAT heavy ranged shot follows warning
+PASS COMBAT experimental pattern off preserves original straight chase
+SESSION 起点ステーションで準備中。
+PASS COMBAT existing session save/load stays connected
+COMBAT RESULT checks=15 failures=0
