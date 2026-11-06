@@ -1,6 +1,101 @@
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 
 SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY real world generation supplied all 4 enemy types
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=false
+PASS JOURNEY natural starter encounter exists patterns=false
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型を停止。成果 +1 C
+PASS JOURNEY player moved from station patterns=false
+PASS JOURNEY navigation reached natural encounter patterns=false
+PASS JOURNEY nearby enemy entered actual Session readout patterns=false
+PASS JOURNEY base automatic weapon attack activated patterns=false
+PASS JOURNEY combat changed HP or dealt damage patterns=false
+PASS JOURNEY no injected fixture enemies patterns=false
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=false
+PASS JOURNEY credits and natural encounter persist patterns=false
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=true
+PASS JOURNEY natural starter encounter exists patterns=true
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型を停止。成果 +1 C
+PASS JOURNEY player moved from station patterns=true
+PASS JOURNEY navigation reached natural encounter patterns=true
+PASS JOURNEY nearby enemy entered actual Session readout patterns=true
+PASS JOURNEY base automatic weapon attack activated patterns=true
+PASS JOURNEY combat changed HP or dealt damage patterns=true
+PASS JOURNEY no injected fixture enemies patterns=true
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=true
+PASS JOURNEY credits and natural encounter persist patterns=true
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=false
+PASS JOURNEY natural starter encounter exists patterns=false
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃型を停止。成果 +1 C
+PASS JOURNEY player moved from station patterns=false
+PASS JOURNEY navigation reached natural encounter patterns=false
+PASS JOURNEY nearby enemy entered actual Session readout patterns=false
+PASS JOURNEY base automatic weapon attack activated patterns=false
+PASS JOURNEY combat changed HP or dealt damage patterns=false
+PASS JOURNEY no injected fixture enemies patterns=false
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=false
+PASS JOURNEY credits and natural encounter persist patterns=false
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=true
+PASS JOURNEY natural starter encounter exists patterns=true
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃型を停止。成果 +1 C
+PASS JOURNEY player moved from station patterns=true
+PASS JOURNEY navigation reached natural encounter patterns=true
+PASS JOURNEY nearby enemy entered actual Session readout patterns=true
+PASS JOURNEY base automatic weapon attack activated patterns=true
+PASS JOURNEY combat changed HP or dealt damage patterns=true
+PASS JOURNEY no injected fixture enemies patterns=true
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=true
+PASS JOURNEY credits and natural encounter persist patterns=true
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
 SESSION 起点ステーションから出発。
 PASS JOURNEY departure works patterns=false
 PASS JOURNEY natural starter encounter exists patterns=false
@@ -17,6 +112,7 @@ SESSION 起点ステーションで準備中。
 PASS JOURNEY natural journey state saved and reloaded patterns=false
 PASS JOURNEY credits and natural encounter persist patterns=false
 SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
 SESSION 起点ステーションから出発。
 PASS JOURNEY departure works patterns=true
 PASS JOURNEY natural starter encounter exists patterns=true
@@ -32,4 +128,40 @@ PASS JOURNEY no injected fixture enemies patterns=true
 SESSION 起点ステーションで準備中。
 PASS JOURNEY natural journey state saved and reloaded patterns=true
 PASS JOURNEY credits and natural encounter persist patterns=true
-JOURNEY SUMMARY {"checks":20,"failures":0,"journeys":[{"closest":5.18,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"fast","final_phase":"travel","first_attack_s":17.15,"incoming":false,"kills":1,"patterns":false,"remaining_hp":37.0,"steps":423},{"closest":5.23,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"fast","final_phase":"travel","first_attack_s":17.15,"incoming":false,"kills":1,"patterns":true,"remaining_hp":37.0,"steps":423}]}
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=false
+PASS JOURNEY natural starter encounter exists patterns=false
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −26
+SESSION 砲撃を受けた。耐久 −26
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+PASS JOURNEY player moved from station patterns=false
+PASS JOURNEY navigation reached natural encounter patterns=false
+PASS JOURNEY nearby enemy entered actual Session readout patterns=false
+PASS JOURNEY base automatic weapon attack activated patterns=false
+PASS JOURNEY combat changed HP or dealt damage patterns=false
+PASS JOURNEY no injected fixture enemies patterns=false
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=false
+PASS JOURNEY credits and natural encounter persist patterns=false
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS JOURNEY departure works patterns=true
+PASS JOURNEY natural starter encounter exists patterns=true
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −26
+SESSION 砲撃を受けた。耐久 −26
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+PASS JOURNEY player moved from station patterns=true
+PASS JOURNEY navigation reached natural encounter patterns=true
+PASS JOURNEY nearby enemy entered actual Session readout patterns=true
+PASS JOURNEY base automatic weapon attack activated patterns=true
+PASS JOURNEY combat changed HP or dealt damage patterns=true
+PASS JOURNEY no injected fixture enemies patterns=true
+SESSION 起点ステーションで準備中。
+PASS JOURNEY natural journey state saved and reloaded patterns=true
+PASS JOURNEY credits and natural encounter persist patterns=true
+JOURNEY SUMMARY {"checks":81,"failures":0,"journeys":[{"closest":5.51,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"melee","final_phase":"travel","first_attack_s":18.7,"incoming":false,"kills":1,"patterns":false,"remaining_hp":3.0,"seed":71129,"steps":566},{"closest":5.51,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"melee","final_phase":"travel","first_attack_s":18.7,"incoming":false,"kills":1,"patterns":true,"remaining_hp":3.0,"seed":71129,"steps":566},{"closest":23.87,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"artillery","final_phase":"travel","first_attack_s":20.7,"incoming":true,"kills":1,"patterns":false,"remaining_hp":5.0,"seed":71130,"steps":582},{"closest":23.87,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"artillery","final_phase":"travel","first_attack_s":20.7,"incoming":true,"kills":1,"patterns":true,"remaining_hp":5.0,"seed":71130,"steps":582},{"closest":5.18,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"fast","final_phase":"travel","first_attack_s":17.15,"incoming":false,"kills":1,"patterns":false,"remaining_hp":37.0,"seed":71127,"steps":423},{"closest":5.23,"damage_or_hit":true,"enemy_hp":0.0,"enemy_type":"fast","final_phase":"travel","first_attack_s":17.15,"incoming":false,"kills":1,"patterns":true,"remaining_hp":37.0,"seed":71127,"steps":423},{"closest":23.93,"damage_or_hit":true,"enemy_hp":113.0,"enemy_type":"heavy","final_phase":"docked","first_attack_s":20.45,"incoming":true,"kills":0,"patterns":false,"remaining_hp":45.0,"seed":71131,"steps":511},{"closest":23.93,"damage_or_hit":true,"enemy_hp":113.0,"enemy_type":"heavy","final_phase":"docked","first_attack_s":20.45,"incoming":true,"kills":0,"patterns":true,"remaining_hp":45.0,"seed":71131,"steps":511}],"seeds":{"artillery":71130,"fast":71127,"heavy":71131,"melee":71129}}
