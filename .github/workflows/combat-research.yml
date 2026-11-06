@@ -7,6 +7,7 @@ on:
       - 'godot-foundation/research/combat/**/*.tscn'
       - 'godot-foundation/research/combat/**/*.tres'
       - 'godot-foundation/tests/test_combat_research.gd'
+      - 'godot-foundation/tests/test_combat_ui.gd'
       - '.github/workflows/combat-research.yml'
   workflow_dispatch:
 permissions:
@@ -38,6 +39,7 @@ jobs:
           for test in test_session test_ui test_combat_research; do
             godot --headless --path godot-foundation --script "res://tests/$test.gd" | tee "/tmp/$test.log"
           done
+          godot --headless --path godot-foundation --script res://tests/test_combat_ui.gd -- --fixture | tee /tmp/test_combat_ui.log
       - name: Install CJK fonts for screenshot evidence
         run: |
           sudo apt-get update -qq
@@ -61,7 +63,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p godot-foundation/research/combat/evidence
-          cp /tmp/import.log /tmp/test_session.log /tmp/test_ui.log /tmp/test_combat_research.log /tmp/capture.log godot-foundation/research/combat/evidence/
+          cp /tmp/import.log /tmp/test_session.log /tmp/test_ui.log /tmp/test_combat_research.log /tmp/test_combat_ui.log /tmp/capture.log godot-foundation/research/combat/evidence/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add godot-foundation/research/combat/evidence/

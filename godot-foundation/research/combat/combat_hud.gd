@@ -19,7 +19,7 @@ func _ready()->void:
     layer_root.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var side:=PanelContainer.new();layer_root.add_child(side)
     side.anchor_left=0.0;side.anchor_right=0.0
-    side.offset_left=14;side.offset_right=360;side.offset_top=115;side.offset_bottom=562
+    side.offset_left=14;side.offset_right=360;side.offset_top=135;side.offset_bottom=582
     var style:=StyleBoxFlat.new();style.bg_color=Color(0.025,0.08,0.13,0.9)
     style.border_color=Color("456b81");style.set_border_width_all(1)
     style.set_content_margin_all(12)
