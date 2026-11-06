@@ -1,0 +1,12 @@
+GitHub Actions / UI research - Foundation regression
+Run: https://github.com/cp-base/cloud-probe/actions/runs/42288276201
+Commit: 5b3d66ded1b7c072190596c66635f06930b795e7
+Job: 128134684200 / verify / completed success
+Install Godot 4.7.2: success
+Import Godot project: success
+Test UI layout: UI_RESEARCH_RESULT checks=23 failures=0
+Test UI with full Foundation: UI_INTEGRATION_RESULT checks=12 failures=0
+Regression - baseline UI: UI_RESULT checks=6 failures=0
+Regression - gameplay: RESULT checks=42 failures=0
+Total checks: 83; failures: 0
+Scope: automated headless project integration, NOT manual on-screen play.

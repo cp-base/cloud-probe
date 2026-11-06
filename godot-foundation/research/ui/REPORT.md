@@ -46,7 +46,7 @@ Godot標準：CanvasLayer、Control、PanelContainer、VBoxContainer、HBoxConta
 3. Xvfb＋Godot OpenGL描画：`hud-800.png`、`hud-1180.png`、`modal-1180.png` の3枚を出力できた。表示値はテスト用サンプルで、ゲーム実プレイのスクリーンショットではない。ローカル添付と `tests/ui_capture.gd` に再生成手順を残した。
 4. Foundation基準の既存記録：v0.3処理42項目＋UI6項目成功。ただし**研究UI適用後にローカル本体全体を起動した結果ではない**。
 
-Godot本体のリポジトリはGitHub連携からソースを確認できたが、一時コンテナの通常ネットワークからGitHubをcloneできなかった。このためローカルではUI単体・スタブまで実行。実際のFoundation一式で確認するため、`ui_foundation_integration.gd` と、ブランチ限定のGitHub Actions回帰テストを用意した（CIの成否は結果確定後に追記）。
+Godot本体のリポジトリはGitHub連携からソースを確認できたが、一時コンテナの通常ネットワークからGitHubをcloneできなかった。このためローカルではUI単体・スタブまで実行。実際のFoundation一式での確認には、`ui_foundation_integration.gd` とブランチ限定のGitHub Actions回帰テストを使用した。結果は次の追補に記録する。
 
 ## 比較・評価
 
@@ -69,3 +69,17 @@ Godot本体のリポジトリはGitHub連携からソースを確認できたが
 - 高DPI、長い翻訳文、フォント代替、マウスキャンセル、エディタでの実作業時間は未計測。
 - 将来候補として施設ページ内部のScene化と更新処理の分離があるが、今回の本番仕様には採用していない。
 
+## 追補：GitHub Actionsによる実Foundation統合確認（2026-11-07）
+
+[実行結果](https://github.com/cp-base/cloud-probe/actions/runs/42288276201)（run 42288276201 / job 128134684200、初回研究実装commit `5b3d66ded1b7c072190596c66635f06930b795e7`）は **success**。LinuxのGodot 4.7.2をインストールし、GitHub上の実際の `godot-foundation/` 一式をcheckout・importして実行した。
+
+| 検査 | 実測結果 |
+|---|---|
+| 新UIコンポーネント/3解像度 | `UI_RESEARCH_RESULT checks=23 failures=0` |
+| 新UI＋実FoundationのMainシーン統合 | `UI_INTEGRATION_RESULT checks=12 failures=0` |
+| 既存UI回帰 | `UI_RESULT checks=6 failures=0` |
+| 既存セッション処理回帰 | `RESULT checks=42 failures=0` |
+
+**計83項目成功、失敗0。** インポート、既存ゲーム、施設5タブ、シーン化UIとセッション参照、前進ボタンの押下/解除、マップ・設定も継承アダプタで動作することを自動確認した。ローカルスタブ10項目はこの83件に含めていない。
+
+これは **headlessの自動テスト** であり、ユーザーが実ウィンドウで出発→航行→帰還を手動操作した事実はない。画像3点も、サンプル値で描画したUIプレビューとして区別する。採用判断・本番マージは保留のまま。
