@@ -18,4 +18,13 @@ PASS COMBAT heavy ranged shot follows warning
 PASS COMBAT experimental pattern off preserves original straight chase
 SESSION 起点ステーションで準備中。
 PASS COMBAT existing session save/load stays connected
-COMBAT RESULT checks=15 failures=0
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS COMBAT real Session.tick starts heavy telegraph
+PASS COMBAT disabling experimental patterns removes transient world flags
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS COMBAT frame-boundary crossing starts heavy warning before actual projectile
+SESSION 起点ステーションで準備中。
+PASS COMBAT loading mid-telegraph clears transient flags safely
+COMBAT RESULT checks=19 failures=0
