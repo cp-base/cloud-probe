@@ -21,7 +21,7 @@ Godot **4.7.2 stable** でこのディレクトリの `project.godot` を開き�
 | `tests/test_world.gd` | ロジック・HTMLの初期シード・保存など25項目 |
 | `tests/test_ui.gd` | 標準Buttonと状態連動など9項目 |
 | `tests/capture.gd` | Xvfbで実画面の証拠画像を取得する補助 |
-| `evidence/` | 実行結果JSONと撮影画像。テスト中の位置変更は証拠画像専用 |
+| `evidence/` | GitHubには実行結果JSON。配布ZIPには撮影画像も含む。テスト中の位置変更は証拠画像専用 |
 | `docs/` | 制作手順、比較、検証範囲と限界 |
 
 ## 検証コマンド（このフォルダで実行）

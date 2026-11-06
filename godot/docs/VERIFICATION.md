@@ -30,10 +30,10 @@
 
 ## 画像証拠
 
-- `evidence/godot_initial.png`：起点からの表示。
-- `evidence/godot_near_signal.png`：調査可能な12単位まで接近（テスト専用に座標を設定）。
-- `evidence/godot_inspected.png`：調査イベントを実行した状態（テスト専用）。
-- `evidence/godot_initial_preview.jpg`：GitHub表示軽量化用の初期画面プレビュー。
+- `evidence/godot_initial.png`：起点からの表示（配布ZIP内）。
+- `evidence/godot_near_signal.png`：調査可能な12単位まで接近（テスト専用に座標を設定、配布ZIP内）。
+- `evidence/godot_inspected.png`：調査イベントを実行した状態（テスト専用、配布ZIP内）。
+- `evidence/godot_initial_preview.jpg`：配布ZIP内の軽量プレビュー。画像はGitHubに未格納（GitHubの検証結果はJSON・Markdown）。
 
 ## 未確認・制限
 

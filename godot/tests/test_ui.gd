@@ -14,7 +14,7 @@ func _run() -> void:
     w.generate_world(true)
     await process_frame
     check("two dedicated draw scenes", main.scene_view is ProbeSceneView and main.mini_map is ProbeMiniMap)
-    check("native action button begins disabled", main.action_button.disabled == false) # base starts inspectable
+    check("native action button enabled at base", main.action_button.disabled == false) # base starts inspectable
     check("four native upgrade buttons", main.shop_buttons.size() == 4 and main.shop_buttons.values().all(func(b): return b is Button))
     var initial := w.position_xy
     main.pressed["forward"] = true

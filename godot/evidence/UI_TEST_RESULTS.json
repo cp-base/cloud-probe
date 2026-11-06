@@ -9,7 +9,7 @@
     },
     {
       "passed": true,
-      "test": "native action button begins disabled"
+      "test": "native action button enabled at base"
     },
     {
       "passed": true,
