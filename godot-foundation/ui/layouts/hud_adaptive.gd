@@ -31,5 +31,7 @@ func _apply_layout()->void:
     keys.visible=not tiny
     hint.visible=not narrow
     status_label.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
-    status_label.clip_text=true
+    # clip_text without minimum height collapsed this Label inside VBoxContainer.
+    status_label.clip_text=false
+    status_label.custom_minimum_size=Vector2(0.0,40.0 if tiny else 22.0)
     $BottomPanel/Content/Notice.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART

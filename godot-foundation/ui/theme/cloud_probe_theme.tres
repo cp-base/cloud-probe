@@ -1,4 +1,7 @@
-[gd_resource type="Theme" load_steps=7 format=3]
+[gd_resource type="Theme" load_steps=8 format=3]
+
+[sub_resource type="SystemFont" id="jp_system"]
+font_names = PackedStringArray("Noto Sans CJK JP", "Noto Sans JP", "Yu Gothic UI", "Meiryo", "sans-serif")
 
 [sub_resource type="StyleBoxFlat" id="panel"]
 bg_color = Color(0.035, 0.09, 0.145, 1)
@@ -59,6 +62,7 @@ corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
 [resource]
+default_font = SubResource("jp_system")
 default_font_size = 15
 Button/colors/font_color = Color(0.88, 0.96, 0.98, 1)
 Button/colors/font_disabled_color = Color(0.50, 0.59, 0.61, 1)

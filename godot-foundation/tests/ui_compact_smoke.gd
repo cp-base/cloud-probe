@@ -35,6 +35,7 @@ func run()->void:
         check(br.position.x>=-1.0 and br.end.x<=float(resolution.x)+1.0,"%s footer horizontal bounds" % resolution)
         check(tr.end.y<br.position.y,"%s no header/footer overlap" % resolution)
         check(map.visible==not compact,"%s mini-map compact visibility" % resolution)
+        check((frame.get_node("TopPanel/Content/Status") as Label).get_rect().size.y>=22.0,"%s status readable row" % resolution)
         check(frame.get_node("TopPanel/Content/Heading").visible==not tiny,"%s title visibility" % resolution)
         check(frame.get_node("BottomPanel/Content/Hint").visible==not compact,"%s helper text visibility" % resolution)
         var actions:Control=frame.get_node("TopPanel/Content/Actions")
