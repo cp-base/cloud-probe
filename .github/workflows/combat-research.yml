@@ -1,0 +1,52 @@
+name: Combat Research (isolated branch)
+on:
+  push:
+    branches: [research/combat]
+    paths:
+      - 'godot-foundation/research/combat/**/*.gd'
+      - 'godot-foundation/research/combat/**/*.tscn'
+      - 'godot-foundation/research/combat/**/*.tres'
+      - 'godot-foundation/tests/test_combat_research.gd'
+      - '.github/workflows/combat-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  godot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot 4.7.2 from official stable archive
+        shell: bash
+        run: |
+          curl -fL --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          echo /tmp/godot >> "$GITHUB_PATH"
+          ln -s /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 /tmp/godot/godot
+      - name: Import scripts and scenes
+        run: |
+          godot --headless --editor --path godot-foundation --import --quit > /tmp/import.log 2>&1
+          cat /tmp/import.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|ERROR:.*Failed loading' /tmp/import.log
+      - name: Foundation and combat tests
+        shell: bash
+        run: |
+          mkdir -p godot-foundation/tests/.state
+          set -o pipefail
+          for test in test_session test_ui test_combat_research; do
+            godot --headless --path godot-foundation --script "res://tests/$test.gd" | tee "/tmp/$test.log"
+          done
+      - name: Capture fixture screenshot
+        shell: bash
+        run: |
+          xvfb-run -a godot --path godot-foundation --rendering-method gl_compatibility --script res://research/combat/capture_fixture.gd -- --fixture | tee /tmp/capture.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: combat-research-evidence
+          path: |
+            /tmp/*.log
+            godot-foundation/research/combat/evidence/*.png
+          if-no-files-found: warn

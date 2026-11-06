@@ -1,0 +1,32 @@
+# Combat Lab — independent research on Foundation v0.3
+
+Branch: `research/combat` (from main `f612435b7aa1c05be607bdb975d123367eaa4819`). All changes are research-only. The HTML version, old Godot comparison, shared decisions/status, existing Foundation UI and normal startup scene remain unchanged.
+
+## Run
+
+From `godot-foundation/`:
+
+```sh
+godot --path . res://research/combat/CombatResearch.tscn
+godot --path . res://research/combat/CombatResearch.tscn -- --fixture
+godot --headless --path . --script res://tests/test_combat_research.gd
+godot --headless --path . --script res://tests/test_session.gd
+godot --headless --path . --script res://tests/test_ui.gd
+```
+
+The optional `--fixture` displays all four enemy combat types in one encounter and **disables saving**. Its positions and enemy state are injected solely for visual comparison. Normal research-scene launch uses the real Foundation save and encounter population. The toggle `敵行動の実験` activates optional patterns; OFF uses Foundation's enemy logic.
+
+## What is reused?
+
+- `combat_main.gd` inherits `ui/main.gd`: exploration, collection, equipment, upgrades, facilities, map, and persistence still use the same Session API.
+- `combat_session.gd` inherits `core/session.gd`, only overrides `_enemies` for optional fast sidestepping and heavy telegraphing; calls `super._enemies(dt)` to retain base behavior.
+- Existing enemy and weapon `.tres` remain the source of HP, damage, range, interval, shapes and colors. Two new pattern Resources store optional research tuning independently.
+- `combat_readout.gd` computes warning states, distance, cooldown, enemy HP and weapon reach without changing game rules.
+- `combat_hud.gd` renders a CanvasLayer overlay and instantiates one PackedScene enemy card per visible enemy.
+- `enemy_card.gd` uses AnimationPlayer for a warning pulse; `combat_hud.gd` uses a Tween for hit feedback.
+
+The cards are read-only; nothing in the HUD is saved. The optional new AI flag is not stored. Its individual enemy `windup` field is stored by Foundation world serialization if the player saves during the experiment.
+
+## Important boundaries
+
+This is a prototype, not adopted balancing. Danger classification is a coarse approximation; base guided projectiles are unchanged. The fixture is an intentionally injected encounter, not evidence of normal encounter density. See `REPORT.md` for tests and Foundation integration.

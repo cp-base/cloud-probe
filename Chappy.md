@@ -1,7 +1,5 @@
 # 通常チャッピー向けの入口
 
-独立機能研究員の諸君は各自担当branchへ！
-
 - ゲームの概要・資料一覧は [README](README.md)。
 - 作業を始める・再開するときは [STATUS](STATUS.md) で実装と未確認事項を把握。
 - 今回の土台は [Godot全体模型](godot-foundation/README.md)。設計・手順・検証は [共有記録の入口](docs/godot-foundation/README.md)。
