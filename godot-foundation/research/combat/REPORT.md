@@ -101,6 +101,58 @@ godot --headless --path . --script res://tests/test_combat_journey_ui.gd -- --jo
 
 **Integration assessment:** the collapsible HUD can be ported with limited dependency changes; optional movement and telegraph timing need careful migration and tests against the production update loop. The strongest generalizable lesson from the follow-up is to test **real entry-point interactions and tick execution**, not only direct helper calls. No AI/balance rule or GUI layout has been proposed as a mandated game design.
 
+
+## Third pass: opt-in automatic encounter / combat / route recovery (2026-11-07)
+
+**Research hypothesis:** during the player's existing auto-forward exploration, a nearby enemy can be automatically acquired, confronted with the *unchanged* Foundation auto-weapon logic, and followed by resuming the previously held exploration heading. The experiment is not a new action-game dodge, mandatory navigation rule, or finished AI policy.
+
+### Implementation isolated to research/combat
+
+- `autopilot.gd`: state-machine `explore → battle → resume → explore`. Initial research constants (not final balancing): engagement within **78** units, drop target beyond **180** units, preferred ranged stand-off based on equipped weapon reach (capped at 36), hold still while turning toward target, and recover saved yaw after enemy defeat. These are provisional numbers for testability.
+- `combat_session.gd`: when **both** the optional automatic-battle feature and existing auto-forward are enabled, delegates desired forward/turn to the state machine before the normal Foundation `tick()`. The existing damage, auto weapon selection, projectiles, drops, fuel and save rules are unchanged. Paused/docked/manual override cancels auto engagement.
+- `combat_main.gd`: opt-in toggle **自動交戦：ON/OFF** (OFF by default). The existing **自動前進** UI is still the trigger; temporary manual steering/reversing overrides automatic battle. `--journey --autobattle --auto` is a deterministic no-save scene for instant repeatability.
+- `combat_hud.gd`: labels the current state (探索 / 交戦 / 復帰), keeping the previous compact/details UI.
+
+### Reproduced results on actual Foundation, not injected combat fixtures
+
+A/B compared **unchanged straight auto-forward** (OFF) against the new **auto-forward with combat handover** (ON), using the same initial seeds, equipment and physics step. Normal chunk/start enemy generation and ordinary Session.tick() remain responsible for movement and attacking. Tests use scripted movement input, not a human play session.
+
+| Start enemy | Seed | Straight auto-forward (OFF) | Auto-battle handover (ON) |
+| --- | ---: | --- | --- |
+| Fast | 71127 | Enemy defeated while cruising | Enemy defeated; **133 combat frames**; returned to original route and advanced at least 10 units |
+| Melee | 71129 | Enemy defeated while cruising | Enemy defeated; **270 combat frames**; returned to route and advanced at least 10 units |
+| Artillery | 71130 | **Enemy not defeated** in cruise run | **Enemy defeated**; **275 combat frames**; route-recovery phase observed; **later returned to station** |
+| Heavy | 71131 | Enemy not defeated | Enemy not defeated; **200 combat frames**, player returned to station |
+
+The baseline Fast/Melee victories are important: enemy AI may chase the explorer regardless of autopilot; this feature did **not** magically turn all missed enemies into wins. The Artillery trial is the clearest benefit of active acquisition and maintaining weapon range. The Heavy trial confirms that changing navigation cannot replace equipment/upgrade progression. Combat start and exit are functional; safety over long autonomous expeditions is **not** established.
+
+### Validation
+
+- Dedicated [successful GitHub Actions #42302688760](https://github.com/cp-base/cloud-probe/actions/runs/42302688760) ran **Godot 4.7.2** on the branch's ephemeral Linux checkout.
+- Existing baseline and prior combat regression: **168/168 PASS**.
+- New automatic-combat logic test `test_combat_autopilot.gd`: **36/36 PASS**, including eight real natural-cruise runs and artificial edge cases for cancellation, toggle-off, and target defeat.
+- New scene/UI test `test_combat_autopilot_ui.gd`: **7/7 PASS**, including toggling and real auto-forward propagation.
+- **Total: 211/211 passing checks.** Godot import and the 1180×760 automatic battle screenshot also succeeded.
+- Branch evidence: `evidence/autobattle.png`, `evidence/test_combat_autopilot.log`, `evidence/test_combat_autopilot_ui.log`, `evidence/capture_autobattle.log`.
+
+```sh
+# Run standard research scene (optional toggle available; OFF by default)
+godot --path . res://research/combat/CombatResearch.tscn
+
+# Deterministic, no-save mode, auto-exploration and auto-battle both enabled
+godot --path . res://research/combat/CombatResearch.tscn -- --journey --autobattle --auto
+
+# Headless A/B and UI tests
+godot --headless --path . --script res://tests/test_combat_autopilot.gd
+godot --headless --path . --script res://tests/test_combat_autopilot_ui.gd -- --journey
+```
+
+### Limitations and next experiments (not decisions)
+
+This is deliberately a **minimal** three-phase navigation state machine with no dodging, extra attacks, stamina modifiers, or forced player interaction. It currently tracks a single enemy, chooses it only in a circular vicinity, does not yet handle route waypoint recovery or groups, and does not automatically retreat on low HP/fuel. `resume` restores **heading**, not an exact plotted route; stopping and turning costs time/fuel. The game's built-in **自動前進** was inherited unchanged. Thresholds are test scaffolding, not established balance or a compulsory feature.
+
+A later experiment could add an automatic *battle-end policy* (continue / retreat / reserve fuel) and test navigation between waypoints rather than headings. Need test UI at different window sizes before considering integration. Crucially **no changes were made to `main`, existing Foundation `core/`/`ui/` or shared decision documents**.
+
 ## How to add enemy and weapon types later
 
 1. For a **new enemy**, add a `ProbeEnemyProfile` `.tres` to `data/`, register it in `data/catalog.gd`, add a type selection policy to `core/world.gd`, then verify `Session._enemies`, visuals/shapes and tests. Currently `world.gd` chooses among exactly 4 entries with `randi_range(0,3)`: simply adding a fifth Resource would not spawn it without changing selection logic. New movement patterns should be considered separately from combat stats.
