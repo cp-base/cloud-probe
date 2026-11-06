@@ -14,6 +14,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: combat-research-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   godot:
     runs-on: ubuntu-latest
@@ -45,9 +48,10 @@ jobs:
           godot --headless --path godot-foundation --script res://tests/test_combat_journey_ui.gd -- --journey | tee /tmp/test_combat_journey_ui.log
       - name: Install CJK fonts for screenshot evidence
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq fonts-noto-cjk
-          fc-cache -f
+          timeout 40s sudo apt-get update -qq || true
+          timeout 40s sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fonts-noto-cjk || true
+          fc-cache -f || true
+          fc-match :lang=ja | head -1
       - name: Capture fixture screenshot
         shell: bash
         run: |
