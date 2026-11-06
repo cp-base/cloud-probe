@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS UI #1 lab starts with Foundation world and writes visited origin
+PASS UI #2 navigation controls are instantiated
+PASS UI #3 map click adds a route waypoint
+PASS UI #4 moving to another area expands observed map
+PASS UI #5 scan visual state has surveyed cells
+PASS UI #6 save button logic serializes ledger
+PASS UI #7 new sortie regenerates world but preserves route
+PASS UI #8 reload restores coordinates and earlier sortie
+UI RESULT 8/8 failures=0
