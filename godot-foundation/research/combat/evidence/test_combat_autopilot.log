@@ -1,0 +1,128 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71127 enabled=false
+PASS AUTO naturally generated encounter exists seed=71127
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 光を回収。+2 C / 燃料 +23
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 高速型の近接攻撃！ 耐久 −8
+SESSION 高速型の近接攻撃！ 耐久 −8
+SESSION 高速型を停止。成果 +1 C
+SESSION 到達記録更新：200。探索成果を獲得。
+SESSION 到達記録更新：300。探索成果を獲得。
+SESSION 燃料切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":0.0,"head_diff":0.0,"killed":true,"kills":1,"mode_history":{"battle":0,"explore":1022,"resume":0},"nearest":5.21,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71127,"type":"fast"}
+PASS AUTO baseline auto-forward never switches mode seed=71127
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71127 enabled=true
+PASS AUTO naturally generated encounter exists seed=71127
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 高速型の近接攻撃！ 耐久 −8
+SESSION 高速型を停止。成果 +1 C
+AUTO CRUISE {"battle_frames":133,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.054,"killed":true,"kills":1,"mode_history":{"battle":133,"explore":354,"resume":24},"nearest":3.16,"phase":"travel","player_hp":37.0,"resumed":true,"route_after":10.2,"seed":71127,"type":"fast"}
+PASS AUTO auto navigation enters combat mode seed=71127
+PASS AUTO auto navigation spends frames in battle seed=71127
+PASS AUTO auto combat completes and restores exploration seed=71127
+PASS AUTO auto exploration continues moving after victory seed=71127
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71129 enabled=false
+PASS AUTO naturally generated encounter exists seed=71129
+SESSION 光を回収。+2 C / 燃料 +0
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 近接型を停止。成果 +1 C
+SESSION 到達記録更新：200。探索成果を獲得。
+SESSION 燃料切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":0.0,"head_diff":0.0,"killed":true,"kills":1,"mode_history":{"battle":0,"explore":834,"resume":0},"nearest":14.4,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71129,"type":"melee"}
+PASS AUTO baseline auto-forward never switches mode seed=71129
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71129 enabled=true
+PASS AUTO naturally generated encounter exists seed=71129
+SESSION 光を回収。+2 C / 燃料 +0
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型の近接攻撃！ 耐久 −14
+SESSION 近接型を停止。成果 +1 C
+SESSION 施設を初発見：交易施設。成果 +3 C
+AUTO CRUISE {"battle_frames":270,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.06,"killed":true,"kills":1,"mode_history":{"battle":270,"explore":368,"resume":24},"nearest":3.26,"phase":"travel","player_hp":3.0,"resumed":true,"route_after":10.2,"seed":71129,"type":"melee"}
+PASS AUTO auto navigation enters combat mode seed=71129
+PASS AUTO auto navigation spends frames in battle seed=71129
+PASS AUTO auto combat completes and restores exploration seed=71129
+PASS AUTO auto exploration continues moving after victory seed=71129
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71130 enabled=false
+PASS AUTO naturally generated encounter exists seed=71130
+SESSION 光を回収。+2 C / 燃料 +17
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −10
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":45.0,"head_diff":0.0,"killed":false,"kills":0,"mode_history":{"battle":0,"explore":664,"resume":0},"nearest":42.23,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71130,"type":"artillery"}
+PASS AUTO baseline auto-forward never switches mode seed=71130
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71130 enabled=true
+PASS AUTO naturally generated encounter exists seed=71130
+SESSION 光を回収。+2 C / 燃料 +17
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃を受けた。耐久 −10
+SESSION 砲撃型を停止。成果 +1 C
+SESSION 砲撃を受けた。耐久 −10
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":275,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.194,"killed":true,"kills":1,"mode_history":{"battle":275,"explore":351,"resume":14},"nearest":33.73,"phase":"docked","player_hp":45.0,"resumed":true,"route_after":134.12,"seed":71130,"type":"artillery"}
+PASS AUTO auto navigation enters combat mode seed=71130
+PASS AUTO auto navigation spends frames in battle seed=71130
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71131 enabled=false
+PASS AUTO naturally generated encounter exists seed=71131
+SESSION 光を回収。+2 C / 燃料 +14
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 砲撃を受けた。耐久 −26
+SESSION 砲撃を受けた。耐久 −26
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":104.0,"head_diff":0.0,"killed":false,"kills":0,"mode_history":{"battle":0,"explore":626,"resume":0},"nearest":32.96,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71131,"type":"heavy"}
+PASS AUTO baseline auto-forward never switches mode seed=71131
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO depart seed=71131 enabled=true
+PASS AUTO naturally generated encounter exists seed=71131
+SESSION 光を回収。+2 C / 燃料 +14
+SESSION 到達記録更新：100。探索成果を獲得。
+SESSION 施設を初発見：交易施設。成果 +3 C
+SESSION 砲撃を受けた。耐久 −26
+SESSION 砲撃を受けた。耐久 −26
+SESSION 耐久切れ。出発施設へ帰還しました。成果・改修・施設は保持。
+AUTO CRUISE {"battle_frames":200,"completions":0,"enabled":true,"encounters":1,"enemy_hp":113.0,"head_diff":0.73,"killed":false,"kills":0,"mode_history":{"battle":200,"explore":353,"resume":0},"nearest":26.23,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71131,"type":"heavy"}
+PASS AUTO auto navigation enters combat mode seed=71131
+PASS AUTO auto navigation spends frames in battle seed=71131
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+PASS AUTO acquire known close target
+PASS AUTO manual override cancels auto battle
+PASS AUTO disabling toggle clears battle
+PASS AUTO defeating target ends battle phase
+AUTO SUMMARY {"checks":36,"failures":0,"samples":[{"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":0.0,"head_diff":0.0,"killed":true,"kills":1,"mode_history":{"battle":0,"explore":1022,"resume":0},"nearest":5.21,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71127,"type":"fast"},{"battle_frames":133,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.054,"killed":true,"kills":1,"mode_history":{"battle":133,"explore":354,"resume":24},"nearest":3.16,"phase":"travel","player_hp":37.0,"resumed":true,"route_after":10.2,"seed":71127,"type":"fast"},{"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":0.0,"head_diff":0.0,"killed":true,"kills":1,"mode_history":{"battle":0,"explore":834,"resume":0},"nearest":14.4,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71129,"type":"melee"},{"battle_frames":270,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.06,"killed":true,"kills":1,"mode_history":{"battle":270,"explore":368,"resume":24},"nearest":3.26,"phase":"travel","player_hp":3.0,"resumed":true,"route_after":10.2,"seed":71129,"type":"melee"},{"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":45.0,"head_diff":0.0,"killed":false,"kills":0,"mode_history":{"battle":0,"explore":664,"resume":0},"nearest":42.23,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71130,"type":"artillery"},{"battle_frames":275,"completions":1,"enabled":true,"encounters":1,"enemy_hp":0.0,"head_diff":0.194,"killed":true,"kills":1,"mode_history":{"battle":275,"explore":351,"resume":14},"nearest":33.73,"phase":"docked","player_hp":45.0,"resumed":true,"route_after":134.12,"seed":71130,"type":"artillery"},{"battle_frames":0,"completions":0,"enabled":false,"encounters":0,"enemy_hp":104.0,"head_diff":0.0,"killed":false,"kills":0,"mode_history":{"battle":0,"explore":626,"resume":0},"nearest":32.96,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71131,"type":"heavy"},{"battle_frames":200,"completions":0,"enabled":true,"encounters":1,"enemy_hp":113.0,"head_diff":0.73,"killed":false,"kills":0,"mode_history":{"battle":200,"explore":353,"resume":0},"nearest":26.23,"phase":"docked","player_hp":45.0,"resumed":false,"route_after":0.0,"seed":71131,"type":"heavy"}]}
