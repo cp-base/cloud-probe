@@ -1,0 +1,22 @@
+{
+  "date_jst": "2026-11-07",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "requested_renderer": "mobile",
+  "effective_renderer": "OpenGL Compatibility fallback / llvmpipe",
+  "base_commit": "f612435b7aa1c05be607bdb975d123367eaa4819",
+  "branch": "research/visual-20261107",
+  "headless_logic": {"failures": 0, "markers": 60, "pass": true},
+  "gallery_gui": {"pass": true, "fixtures": [60, 250], "captured_pngs": 8, "capture_resolution": [1180,760]},
+  "overlay_update_ms": {
+    "60": {"baseline": 0.0532, "contour": 0.3625, "haze": 0.3220},
+    "250": {"baseline": 0.1597, "contour": 1.2621, "haze": 1.2331}
+  },
+  "sequential_fps_observed_not_controlled": {
+    "60": {"baseline": 135.97, "contour": 153.81, "haze": 152.58},
+    "250": {"baseline": 118.02, "contour": 110.14, "haze": 107.39}
+  },
+  "full_foundation_scene_run": false,
+  "subclass_parse_with_local_stub": true,
+  "original_game_files_modified": false,
+  "limitations": ["Container cannot clone GitHub directly", "Vulkan unavailable; software OpenGL fallback", "Full Foundation game integration not exercised locally"]
+}

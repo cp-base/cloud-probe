@@ -1,0 +1,46 @@
+{
+  "60": {
+    "base": {
+      "colored_px": 15202,
+      "mean_luma": 30.61,
+      "difference_from_base_pct": 0.0
+    },
+    "contour": {
+      "colored_px": 20811,
+      "mean_luma": 33.41,
+      "difference_from_base_pct": 11.4
+    },
+    "haze": {
+      "colored_px": 24147,
+      "mean_luma": 35.22,
+      "difference_from_base_pct": 9.38
+    },
+    "burst": {
+      "colored_px": 24794,
+      "mean_luma": 35.64,
+      "difference_from_base_pct": 9.73
+    }
+  },
+  "250": {
+    "base": {
+      "colored_px": 8721,
+      "mean_luma": 26.97,
+      "difference_from_base_pct": 0.0
+    },
+    "contour": {
+      "colored_px": 12650,
+      "mean_luma": 29.61,
+      "difference_from_base_pct": 7.17
+    },
+    "haze": {
+      "colored_px": 14006,
+      "mean_luma": 30.59,
+      "difference_from_base_pct": 6.0
+    },
+    "burst": {
+      "colored_px": 14540,
+      "mean_luma": 31.12,
+      "difference_from_base_pct": 6.4
+    }
+  }
+}
