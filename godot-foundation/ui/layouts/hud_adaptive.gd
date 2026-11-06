@@ -4,7 +4,7 @@ const BREAKPOINT_W:float = 850.0
 const BREAKPOINT_H:float = 650.0
 const TINY_W:float = 700.0
 const TINY_H:float = 530.0
-var layout_mode:String = ""
+var ui_size_mode:String = ""
 
 func _ready()->void:
     resized.connect(_apply_layout)
@@ -15,7 +15,7 @@ func _apply_layout()->void:
         return
     var narrow:bool=size.x<BREAKPOINT_W or size.y<BREAKPOINT_H
     var tiny:bool=size.x<TINY_W or size.y<TINY_H
-    layout_mode="tiny" if tiny else ("compact" if narrow else "wide")
+    ui_size_mode="tiny" if tiny else ("compact" if narrow else "wide")
     var top:PanelContainer=$TopPanel
     var bottom:PanelContainer=$BottomPanel
     var map_panel:PanelContainer=$MapPanel

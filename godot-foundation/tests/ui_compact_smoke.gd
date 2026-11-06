@@ -29,7 +29,7 @@ func run()->void:
         var br:Rect2=bottom.get_global_rect()
         var compact:bool=resolution.x<850 or resolution.y<650
         var tiny:bool=resolution.x<700 or resolution.y<530
-        check(frame.layout_mode==("tiny" if tiny else ("compact" if compact else "wide")),"%s breakpoint mode" % resolution)
+        check(frame.ui_size_mode==("tiny" if tiny else ("compact" if compact else "wide")),"%s breakpoint mode" % resolution)
         check(rect.size.is_equal_approx(Vector2(resolution)),"%s full viewport anchoring" % resolution)
         check(tr.position.x>=-1.0 and tr.end.x<=float(resolution.x)+1.0,"%s header horizontal bounds" % resolution)
         check(br.position.x>=-1.0 and br.end.x<=float(resolution.x)+1.0,"%s footer horizontal bounds" % resolution)
@@ -42,7 +42,7 @@ func run()->void:
         var buttons:Control=frame.get_node("BottomPanel/Content/Controls")
         check(buttons is HFlowContainer and buttons.get_child_count()==5,"%s 5 movement actions remain" % resolution)
         check(buttons.get_rect().size.y>=39.0,"%s movement button height" % resolution)
-        print("UI_COMPACT_LAYOUT ",resolution," mode=",frame.layout_mode," top=",tr," bottom=",br," controls=",buttons.get_rect())
+        print("UI_COMPACT_LAYOUT ",resolution," mode=",frame.ui_size_mode," top=",tr," bottom=",br," controls=",buttons.get_rect())
         view.queue_free()
         await process_frame
     var compact_view:=SubViewport.new()
