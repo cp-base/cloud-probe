@@ -21,6 +21,14 @@ jobs:
         run: |
           fc-match "Noto Sans CJK JP"
           fc-list :lang=ja family | head -10 || true
+      - name: Export isolated Foundation source
+        run: git archive --format=zip HEAD godot-foundation > /tmp/cloud-probe-ui-v2-source.zip
+      - name: Upload source for independent Godot verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-v2-source
+          path: /tmp/cloud-probe-ui-v2-source.zip
+          if-no-files-found: error
       - name: Import Foundation
         run: /tmp/Godot_v4.7.2-stable_linux.x86_64 --headless --editor --path godot-foundation --import --quit
       - name: Original UI layout tests
