@@ -1,0 +1,25 @@
+[gd_scene format=3]
+
+[node name="ModalShell" type="PanelContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 23.0
+offset_right = -22.0
+offset_bottom = -23.0
+
+[node name="Body" type="VBoxContainer" parent="."]
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="Body"]
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Body/Header"]
+size_flags_horizontal = 3
+text = "画面"
+theme_override_font_sizes/font_size = 23
+
+[node name="Close" type="Button" parent="Body/Header"]
+custom_minimum_size = Vector2(98, 38)
+text = "閉じる"
+focus_mode = 0
