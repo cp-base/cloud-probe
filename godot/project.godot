@@ -1,0 +1,23 @@
+; CLOUD / PROBE 05 - Godot comparison experiment. Original HTML is unchanged.
+config_version=5
+
+[application]
+config/name="CLOUD / PROBE - Godot Comparison"
+run/main_scene="res://scenes/Main.tscn"
+config/description="Independent Godot reproduction of CLOUD / PROBE 05"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=900
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+
+[gui]
+theme/default_font_size=15
+
+[physics]
+common/physics_ticks_per_second=60

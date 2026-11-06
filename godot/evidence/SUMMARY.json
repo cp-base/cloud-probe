@@ -1,0 +1,26 @@
+{
+  "experiment": "CLOUD / PROBE 05 Godot comparison",
+  "date": "2026-11-06",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "source_html_blob_sha": "1d0b2c88532f4fa751c2002e88b9527e23f0501e",
+  "unit_tests": {
+    "passed": 25,
+    "total": 25
+  },
+  "ui_tests": {
+    "passed": 9,
+    "total": 9
+  },
+  "screenshots": {
+    "initial": true,
+    "near_signal": true,
+    "inspected": true
+  },
+  "html_files_modified": false,
+  "limitations": [
+    "No iOS/Windows runtime verification",
+    "No simultaneous HTML screenshot pixel comparison",
+    "GUI layout narrow/mobile not verified",
+    "All-node HTML coordinate parity not exhaustively tested"
+  ]
+}

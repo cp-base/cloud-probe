@@ -1,0 +1,43 @@
+{
+  "failed": 0,
+  "passed": 9,
+  "suite": "CLOUD / PROBE Godot UI integration",
+  "tests": [
+    {
+      "passed": true,
+      "test": "two dedicated draw scenes"
+    },
+    {
+      "passed": true,
+      "test": "native action button begins disabled"
+    },
+    {
+      "passed": true,
+      "test": "four native upgrade buttons"
+    },
+    {
+      "passed": true,
+      "test": "hold button wiring triggers player movement"
+    },
+    {
+      "passed": true,
+      "test": "auto button toggle triggers movement"
+    },
+    {
+      "passed": true,
+      "test": "auto button toggles off"
+    },
+    {
+      "passed": true,
+      "test": "action click inspects signal"
+    },
+    {
+      "passed": true,
+      "test": "notification presented"
+    },
+    {
+      "passed": true,
+      "test": "HUD reflects credits"
+    }
+  ]
+}

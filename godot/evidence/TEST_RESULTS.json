@@ -1,0 +1,134 @@
+{
+  "engine": "4.7.2-stable (official)",
+  "failed": 0,
+  "passed": 25,
+  "suite": "CLOUD / PROBE Godot independent comparison",
+  "tests": [
+    {
+      "details": "-12.1615106763784",
+      "passed": true,
+      "test": "seeded first HTML signal X"
+    },
+    {
+      "details": "139.322810063139",
+      "passed": true,
+      "test": "seeded first HTML signal Y"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "base and 9 station nodes"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "world radius 10000"
+    },
+    {
+      "details": "nodes=368 enemies=141",
+      "passed": true,
+      "test": "signals and enemies populated"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "starting resources"
+    },
+    {
+      "details": "(0.0, 25.0)",
+      "passed": true,
+      "test": "forward 25 units in 1 second"
+    },
+    {
+      "details": "89.4999999999999",
+      "passed": true,
+      "test": "fuel drain 0.42/unit"
+    },
+    {
+      "details": "1.8",
+      "passed": true,
+      "test": "clockwise turn 1.8 radians/second"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "auto forward moves without held button"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "near signal enabled and inspectable"
+    },
+    {
+      "details": "credits=3",
+      "passed": true,
+      "test": "inspection grants 1-3 credits"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "used signal cannot be inspected again"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "inspection result modifies state"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "station full refill"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "base refill"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "speed purchase at base"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "fuel purchase expands tank"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "purchase away from base rejected"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "fuel exhaustion returns to origin"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "credits / upgrades persist through return"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "return refills upgraded tank"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "progress JSON saved"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "reset creates fresh world with incremented seed"
+    },
+    {
+      "details": "",
+      "passed": true,
+      "test": "reset world independent from original HTML storage"
+    }
+  ],
+  "total": 25
+}
