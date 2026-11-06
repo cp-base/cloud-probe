@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CLOUD / PROBE 05 — 探索と育成</title>
+<style>
+:root {color-scheme:dark; --bg:#071420; --panel:#0c2332; --edge:#27485e; --light:#e9f8ff; --muted:#9cbdce; --aqua:#73e9e3; --gold:#ffd88c;}
+* {box-sizing:border-box}
+html,body {margin:0; min-height:100%; background:#05111d; color:var(--light); font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;}
+body {display:flex;justify-content:center;overflow-x:hidden;}
+button {font:inherit; user-select:none; -webkit-user-select:none; touch-action:none; cursor:pointer;}
+button:focus-visible {outline:2px solid var(--aqua);outline-offset:3px}
+.shell {width:min(1040px,100%); padding:16px 14px 22px;}
+.head {display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.brand {font-size:18px;letter-spacing:.13em;font-weight:750}.brand small{display:block;font-size:11px;letter-spacing:.11em;color:var(--muted);font-weight:500;margin-top:3px}
+.head button,.small-btn {background:#102c3f;border:1px solid #366073;color:#e1fbff;border-radius:9px;padding:10px 12px;font-size:12px}
+.layout {display:grid;grid-template-columns: minmax(0,1fr) 234px;gap:12px;align-items:stretch}
+.screen {min-width:0;position:relative;border:1px solid #31546b;border-radius:14px;overflow:hidden;background:#0e2736;min-height:450px}
+#scene {display:block;width:100%;height:450px;touch-action:none}
+.reticle {pointer-events:none;position:absolute;top:49%;left:50%;height:16px;width:16px;border:1px solid #9bece0;border-radius:50%;transform:translate(-50%,-50%);opacity:.48}
+.reticle:before,.reticle:after {content:"";position:absolute;background:#9bece0}.reticle:before{width:24px;height:1px;left:-5px;top:7px}.reticle:after{width:1px;height:24px;top:-5px;left:7px}
+.scene-top {pointer-events:none;position:absolute;top:16px;left:16px;display:flex;flex-direction:column;gap:5px}
+.scene-top .mono {font:11px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em;color:#a3e8e5}
+.signal-key{display:flex;flex-wrap:wrap;gap:5px 11px;font:10px ui-monospace,monospace;color:#d1eaf3;margin-top:2px}.signal-key span{display:inline-flex;align-items:center;gap:5px}.signal-key i{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);display:inline-block}.scene-top .hint {font-size:12px;color:#d9eef4;text-shadow:0 1px 5px #081923}
+.scene-bottom {pointer-events:none;position:absolute;left:16px;right:16px;bottom:14px;display:flex;justify-content:space-between;font:11px ui-monospace,monospace;color:#b7d7e3;gap:5px}
+.sidebar {border:1px solid #2a4e64;border-radius:14px;background:linear-gradient(165deg,#10293a,#0a1c2d);padding:14px;display:flex;flex-direction:column;gap:12px;}
+.section-title {font-size:10px;letter-spacing:.17em;color:#7eafb8;margin-bottom:7px;font-weight:750}
+.meterhead{display:flex;align-items:center;justify-content:space-between;font-size:12px}.meterhead b{font:18px ui-monospace,monospace;color:var(--gold)}
+.bar{margin-top:8px;background:#18354a;height:11px;border-radius:99px;overflow:hidden;border:1px solid #33546c}
+.bar>div{height:100%;width:100%;background:linear-gradient(90deg,#8ee5d0,#ffe19e);transition:width .15s}
+.map-wrap{position:relative;width:100%;aspect-ratio:1;border:1px solid #2c5368;border-radius:9px;overflow:hidden;background:#061925}
+#map {display:block;width:100%;height:100%}
+.north{pointer-events:none;position:absolute;top:7px;left:9px;font:700 10px ui-monospace,monospace;color:#b1d7e1}
+.data{display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:3px 0;border-bottom:1px solid #204055}.data b{color:#eefaff;font-family:ui-monospace,monospace}
+.notice {color:#c8dce5;font-size:12px;line-height:1.6;min-height:59px;border-top:1px solid #28465d;padding-top:9px}
+.controls{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.pad{display:grid;grid-template-columns:repeat(4,minmax(0,74px));grid-template-rows:repeat(2,62px);gap:7px;flex:0 0 auto;margin-inline:auto;justify-content:center}
+.pad [data-hold="forward"]{grid-column:2;grid-row:1}
+.pad #autoForward{grid-column:4;grid-row:1}
+.pad [data-hold="left"]{grid-column:1;grid-row:2}
+.pad [data-hold="backward"]{grid-column:2;grid-row:2}
+.pad [data-hold="right"]{grid-column:3;grid-row:2}
+.pad #action{grid-column:4;grid-row:2}
+.ctl{border:1px solid #4c8190;background:linear-gradient(#1d4355,#123044);border-radius:12px;color:#efffff;padding:8px 5px;font-size:19px;min-height:58px;line-height:1.2}
+.ctl.active,.ctl[aria-pressed="true"]{background:#28606b;border-color:#91dcd4;box-shadow:0 0 0 1px rgba(145,220,212,.35) inset}
+.ctl small{display:block;font-size:10px;letter-spacing:0;color:#a9cdd9;font-weight:400;margin-top:4px}
+#autoForward{font-size:19px}
+#autoForward[aria-pressed="true"] small{color:#caffc8}
+#action{border-color:#569c9a;background:linear-gradient(#1d5757,#124342);font-size:17px}
+#action:disabled{opacity:.45;cursor:default;border-color:#39596b;background:#123146}
+.explain{display:flex;flex-direction:column;justify-content:center;gap:5px;flex:0 1 360px;font-size:12px;color:#b3cedb;line-height:1.5}
+.explain b{color:#e4f7fb;font-weight:600}
+.shop{margin-top:12px;border:1px solid #34596e;background:linear-gradient(160deg,#112b3d,#0c1f30);border-radius:14px;padding:14px}
+.shop-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.shop-top strong{font-size:14px;color:#d8f7f7}.shop-note{font-size:11px;color:#a4c6d4}
+.shop-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.upgrade-card{border:1px solid #315b72;border-radius:10px;padding:10px;background:#0c2638;display:flex;flex-direction:column;gap:6px;min-width:0}
+.upgrade-name{font-size:13px;font-weight:700}.upgrade-effect{font:11px ui-monospace,SFMono-Regular,monospace;color:#a5d4dd;line-height:1.5;min-height:2.7em}
+.buy{width:100%;min-height:40px;border-radius:8px;border:1px solid #648b94;background:#214957;color:#f0fbff;font-size:13px;font-weight:600;padding:7px 4px}
+.buy:disabled{opacity:.45;background:#153344;color:#a4c0cf}.shop-status{color:#93b9c9;font-size:11px;margin-top:9px;min-height:17px}
+.wallet-value{color:#ffe39c!important;font-size:17px}
+.footer{margin-top:12px;font-size:11px;line-height:1.7;color:#7f9dac}
+@media(max-width:690px){.shell{padding:10px 10px 20px;display:flex;flex-direction:column}.head{order:0}.layout{display:contents}.screen{order:1;min-height:300px}#scene{height:min(42vh,380px);min-height:300px}.controls{order:2;flex-direction:column;gap:8px;margin:8px 0 12px;padding:8px 0}.pad{grid-template-columns:repeat(4,minmax(0,68px));grid-template-rows:repeat(2,56px);gap:5px;max-width:100%;margin-inline:auto}.ctl{min-height:56px;padding:6px 3px;font-size:20px}.ctl small{font-size:10px;margin-top:3px}.explain{display:none}.sidebar{order:3;display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr);gap:10px}.sidebar .col2{grid-column:2;grid-row:1 / span 3}.sidebar .notice{grid-column:1 / -1;min-height:0}.map-wrap{max-width:240px;margin:auto}.shop{order:4;padding:12px}.shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.footer{order:5}.brand{font-size:16px}}
+@media(max-width:385px){.sidebar{grid-template-columns:1fr 1fr;padding:10px}.map-wrap{max-width:170px}.data{font-size:11px}.pad{grid-template-columns:repeat(4,minmax(0,62px));gap:4px}}
+</style>
+</head>
+<body>
+<div class="shell">
+ <header class="head">
+  <div class="brand">CLOUD <span style="color:var(--aqua)">/ PROBE 05</span><small>AIクラウド世界・探索と強化 / 半径10000の模型</small></div>
+  <button id="newWorld" type="button">世界と育成をリセット ↻</button>
+ </header>
+ <main class="layout">
+  <section class="screen" aria-label="一人称風景">
+   <canvas id="scene"></canvas>
+   <div class="reticle"></div>
+   <div class="scene-top"><div class="mono">SIGNAL SPACE / LIVE</div><div class="hint" id="frontHint">雲の向こうに未知の信号がある</div><div class="signal-key"><span><i style="--signal:#ffd88c"></i>固定施設</span><span><i style="--signal:#6bc9ff"></i>青の信号</span><span><i style="--signal:#80f3aa"></i>緑の信号</span><span><i style="--signal:#ff5669"></i>赤の敵影</span></div></div>
+   <div class="scene-bottom"><span id="bearing">方位 000°</span><span>前方投影 / 仮想空間</span></div>
+  </section>
+  <aside class="sidebar">
+   <div class="col1"><div class="section-title">ENERGY / 移動燃料</div><div class="meterhead"><span>残量</span><b id="fuelText">100%</b></div><div class="bar"><div id="fuelBar"></div></div></div>
+   <div class="col2"><div class="section-title">LOCAL MAP / 周辺地図</div><div class="map-wrap"><canvas id="map"></canvas><span class="north">N ↑</span></div><div style="font-size:10px;color:#89b6bd;margin-top:6px">中心＝現在地 / ▲＝進行方向</div></div>
+   <div class="col1"><div class="section-title">CREDITS / 探索資金</div><div class="data"><span>所持資金</span><b class="wallet-value" id="walletText">0 C</b></div><div class="data"><span>最高到達距離</span><b id="bestText">0</b></div></div>
+   <div class="col1"><div class="section-title">TELEMETRY</div><div class="data"><span>起点からの距離</span><b id="distText">0</b></div><div class="data"><span>発見した地点</span><b id="foundText">0</b></div><div class="data"><span>調査 / 遭遇</span><b id="eventText">0 / 0</b></div></div>
+   <div class="notice" id="notice" aria-live="polite">矢印ボタンで向きを変え、未知の信号へ進んでみよう。</div>
+  </aside>
+ </main>
+ <section class="controls" aria-label="移動操作">
+  <div class="pad">
+   <button class="ctl" data-hold="forward" type="button" aria-label="前進">↑<small>前進</small></button>
+   <button class="ctl" id="autoForward" type="button" aria-label="自動前進" aria-pressed="false">▶<small id="autoLabel">自動前進</small></button>
+   <button class="ctl" data-hold="left" type="button" aria-label="左旋回">↶<small>左旋回</small></button>
+   <button class="ctl" data-hold="backward" type="button" aria-label="後退">↓<small>後退</small></button>
+   <button class="ctl" data-hold="right" type="button" aria-label="右旋回">↷<small>右旋回</small></button>
+   <button id="action" class="ctl" type="button" disabled aria-label="調べる（近くの地点を調査・補給）">⌕<small>調べる</small></button>
+  </div>
+  <div class="explain"><div><b>操作：</b>方向ボタン長押し / 自動前進はタップでON・OFF。自動前進中も左右旋回できます。</div><div><b>調査：</b>青・緑の信号でランダムイベント。赤い敵は動き、接触すると燃料を消費。</div></div>
+ </section>
+ <section class="shop" aria-label="航行能力の強化">
+  <div class="shop-top"><strong>強化ターミナル / UPGRADES</strong><span class="shop-note">購入は起点（距離18以内）のみ</span></div>
+  <div class="shop-grid">
+   <div class="upgrade-card"><div class="upgrade-name">燃料容量 <span id="lvFuel">Lv.0</span></div><div class="upgrade-effect" id="effectFuel">最大燃料 100 → 130</div><button class="buy" data-buy="fuel" id="buyFuel" type="button">12 Cで強化</button></div>
+   <div class="upgrade-card"><div class="upgrade-name">航行効率 <span id="lvEfficiency">Lv.0</span></div><div class="upgrade-effect" id="effectEfficiency">燃料消費を軽減</div><button class="buy" data-buy="efficiency" id="buyEfficiency" type="button">14 Cで強化</button></div>
+   <div class="upgrade-card"><div class="upgrade-name">移動速度 <span id="lvSpeed">Lv.0</span></div><div class="upgrade-effect" id="effectSpeed">移動速度アップ</div><button class="buy" data-buy="speed" id="buySpeed" type="button">16 Cで強化</button></div>
+   <div class="upgrade-card"><div class="upgrade-name">探知能力 <span id="lvSensor">Lv.0</span></div><div class="upgrade-effect" id="effectSensor">信号の検出距離アップ</div><button class="buy" data-buy="sensor" id="buySensor" type="button">14 Cで強化</button></div>
+  </div><div class="shop-status" id="shopStatus">探索中も強化内容を確認できます。</div>
+ </section>
+ <div class="footer">試作の経済バランス：青・緑の調査は資金1〜3、敵は1、固定施設の初発見は4、最高到達距離200ごとに2。強化は起点で購入。収入・価格は仮設定です。資金と強化は燃料切れでも引き継ぎます。ブラウザが保存を許可する場合のみ再読み込み後も保持します。</div>
+</div>
+<script>
+(()=>{'use strict';
+const scene=document.getElementById('scene'),map=document.getElementById('map'),sc=scene.getContext('2d'),mc=map.getContext('2d');
+const el=id=>document.getElementById(id);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const TAU=Math.PI*2, FOV=Math.PI*0.47;
+const typeNames={base:'起点',station:'固定施設',blue:'青の信号',green:'緑の信号'};
+const typeColors={base:'#a6c3ff',station:'#ffd88c',blue:'#6bc9ff',green:'#80f3aa',enemy:'#ff5669'};
+const rng=s=>()=>{s|=0;s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t^=t+Math.imul(t^(t>>>7),61|t);return ((t^(t>>>14))>>>0)/4294967296;};
+let seed=20261106,nodes=[],enemies=[],explored=[],discoveries=new Set(),visited=new Set();
+let player={x:0,y:0,angle:0,fuel:100,distTravel:0,efficiency:0};
+let active=new Set(),autoForward=false,nearest=null,steps=0,sortie=1,eventsDone=0,battles=0;
+let lastFrame=performance.now(),noticeLockUntil=0;
+const STORAGE_KEY='cloud-probe05-v1';
+const upgradeBaseCost={fuel:12,efficiency:14,speed:16,sensor:14};
+const upgradeKeys=['fuel','efficiency','speed','sensor'];
+const upgradeId={fuel:'Fuel',efficiency:'Efficiency',speed:'Speed',sensor:'Sensor'};
+let credits=0,upgrades={fuel:0,efficiency:0,speed:0,sensor:0},bestRange=0,paidDistanceStep=0;
+const maxFuel=()=>100+30*upgrades.fuel;
+const fuelCost=()=>.42*Math.pow(.89,upgrades.efficiency);
+const flightSpeed=()=>25*(1+.22*upgrades.speed);
+const senseRange=()=>34+14*upgrades.sensor;
+const upgradeCost=key=>Math.ceil(upgradeBaseCost[key]*Math.pow(1.65,upgrades[key]));
+const isAtBase=()=>Math.hypot(player.x,player.y)<18;
+function addCredits(amount){credits+=amount;saveGame();return amount;}
+function saveGame(){
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify({seed,credits,upgrades,bestRange,paidDistanceStep,discoveries:[...discoveries]}));}catch(e){}
+}
+function loadGame(){
+ try{const o=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(!o||!Number.isInteger(o.seed))return null;
+   seed=o.seed;credits=Math.max(0,Number(o.credits)||0);bestRange=Math.max(0,Number(o.bestRange)||0);
+   paidDistanceStep=Math.max(0,Math.floor(Number(o.paidDistanceStep)||0));
+   for(const k of upgradeKeys)upgrades[k]=Math.min(40,Math.max(0,Math.floor(Number(o.upgrades?.[k])||0)));
+   return o;
+ }catch(e){return null;}
+}
+function purchase(key){
+ if(!upgradeKeys.includes(key))return false;
+ if(!isAtBase()){showNotice('強化は起点で購入できます。',true);return false;}
+ const cost=upgradeCost(key);if(credits<cost){showNotice('資金が足りません。必要資金 '+cost+' C。',true);return false;}
+ credits-=cost;upgrades[key]++;
+ if(key==='fuel')player.fuel+=30;
+ setAutoForward(false);saveGame();renderShop();
+ const labels={fuel:'燃料容量',efficiency:'航行効率',speed:'移動速度',sensor:'探知能力'};
+ showNotice(labels[key]+'を Lv.'+upgrades[key]+' に強化！ '+cost+' Cを使用。',true);
+ return true;
+}
+function renderShop(){
+ const atBase=isAtBase();
+ for(const key of upgradeKeys){const id=upgradeId[key],lv=upgrades[key],cost=upgradeCost(key);
+   el('lv'+id).textContent='Lv.'+lv;
+   const b=el('buy'+id);b.textContent=cost+' Cで強化';b.disabled=!atBase||credits<cost;
+ }
+ el('effectFuel').textContent='最大 '+maxFuel()+' → '+(maxFuel()+30);
+ el('effectEfficiency').textContent='消費 '+fuelCost().toFixed(3)+' → '+(.89*fuelCost()).toFixed(3)+'/距離';
+ el('effectSpeed').textContent='速度 '+flightSpeed().toFixed(1)+' → '+(flightSpeed()+5.5).toFixed(1);
+ el('effectSensor').textContent='探知 '+senseRange()+' → '+(senseRange()+14);
+ el('shopStatus').textContent=!atBase?'起点から離れています。帰還すると購入できます。':credits<Math.min(...upgradeKeys.map(upgradeCost))?'探索資金を集めると強化できます。':'購入できる強化があります。';
+}
+let ctxWidth=900,ctxHeight=440,mpWidth=210;
+function showNotice(message,important=false){
+ if(!important&&performance.now()<noticeLockUntil)return;
+ el('notice').textContent=message;
+ if(important)noticeLockUntil=performance.now()+3300;
+}
+function setAutoForward(next){autoForward=next;const b=el('autoForward');b.setAttribute('aria-pressed',String(next));b.firstChild.textContent=next?'■':'▶';el('autoLabel').textContent=next?'自動停止':'自動前進';}
+function makeWorld(resetProgress=true){
+ if(resetProgress){credits=0;upgrades={fuel:0,efficiency:0,speed:0,sensor:0};bestRange=0;paidDistanceStep=0;}
+ const r=rng(seed), WORLD_RADIUS=10000;
+ nodes=[{id:0,x:0,y:0,type:'base'}];enemies=[];
+ // 近場は遊びやすく、外側には広大な世界が続く構成。
+ nodes.push({id:1,x:(r()-.5)*25,y:118+r()*24,type:'blue'});
+ let id=2;
+ const stations=[
+   {dist:260,ang:.10},{dist:460,ang:-.82},{dist:880,ang:1.16},
+   {dist:1450,ang:2.35},{dist:2400,ang:-2.10},{dist:3700,ang:.92},
+   {dist:5600,ang:-.34},{dist:7800,ang:2.74},{dist:9300,ang:-1.48}
+ ];
+ for(const s of stations){
+   nodes.push({id:id++,x:Math.sin(s.ang)*s.dist,y:Math.cos(s.ang)*s.dist,type:'station'});
+ }
+ const bandCount=18;
+ for(let band=0;band<bandCount;band++){
+   const t=band/(bandCount-1);
+   const inner=140+t*t*9300;
+   const outer=Math.min(WORLD_RADIUS-120, inner+260+t*420);
+   const count=band<3?8+band*3:10+Math.floor(band*1.2);
+   for(let i=0;i<count;i++){
+     const theta=(i+(r()-.5)*.35)*TAU/count + band*.29 + (r()-.5)*.3;
+     const radius=inner + (outer-inner)*r();
+     const type=(r()<(.58-.12*t))?'blue':'green';
+     nodes.push({id:id++,x:Math.sin(theta)*radius,y:Math.cos(theta)*radius,type});
+   }
+ }
+ let enemyId=1000;
+ for(let band=0;band<14;band++){
+   const t=band/13;
+   const count=band<3?3+band:6+Math.floor(band*.8);
+   const inner=210+t*t*8600;
+   const outer=Math.min(WORLD_RADIUS-100, inner+220+t*300);
+   for(let i=0;i<count;i++){
+     const theta=(i+r())*TAU/count + band*.43;
+     const radius=inner + (outer-inner)*r();
+     const hx=Math.sin(theta)*radius, hy=Math.cos(theta)*radius;
+     if(nodes.some(n=>Math.hypot(hx-n.x,hy-n.y)<42)) continue;
+     enemies.push({id:enemyId++,x:hx,y:hy,hx,hy,dir:r()*TAU,phase:r()*TAU,speed:5+r()*3.5,alive:true});
+   }
+ }
+ discoveries=new Set([0]);visited=new Set();explored=[{x:0,y:0}];sortie=1;eventsDone=0;battles=0;
+ player={x:0,y:0,angle:0,fuel:maxFuel(),distTravel:0,efficiency:0};steps=0;
+ noticeLockUntil=0;setAutoForward(false);active.clear();
+ showNotice('広域世界を生成。信号を調査し、起点で航行能力を強化しよう。');updateDiscovery();renderShop();saveGame();
+}
+function resizeCanvas(canvas,w,h){const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);}
+function resize(){const sb=scene.getBoundingClientRect(),mb=map.getBoundingClientRect();ctxWidth=sb.width;ctxHeight=sb.height;mpWidth=mb.width;resizeCanvas(scene,sb.width,sb.height);resizeCanvas(map,mb.width,mb.height);}
+if(typeof ResizeObserver!=='undefined'){new ResizeObserver(resize).observe(scene);new ResizeObserver(resize).observe(map);}window.addEventListener('resize',resize);
+const distance=n=>Math.hypot(player.x-n.x,player.y-n.y);
+function normAngle(x){while(x>Math.PI)x-=TAU;while(x<-Math.PI)x+=TAU;return x;}
+function updateDiscovery(){
+ for(const n of nodes){if(!discoveries.has(n.id)&&distance(n)<senseRange()){discoveries.add(n.id);if(n.type==='station'){addCredits(4);showNotice('固定施設を初発見！ 探索資金 +4 C。',true);} else showNotice(typeNames[n.type]+'を発見。接近して「調べる」。');saveGame();}}
+ nearest=nodes.filter(n=>distance(n)<15&&(n.type==='base'||n.type==='station'||!visited.has(n.id))).sort((a,b)=>distance(a)-distance(b))[0]||null;
+ const b=el('action');b.disabled=!nearest;
+ b.setAttribute('aria-label',nearest?(nearest.type==='base'?'起点で補給':nearest.type==='station'?'固定施設で補給':typeNames[nearest.type]+'を調べる'):'調べる（近くに調査対象なし）');
+}
+function returnToBase(reason='燃料切れ'){
+ setAutoForward(false);active.clear();sortie++;visited.clear();
+ enemies.forEach(e=>{e.x=e.hx;e.y=e.hy;e.alive=true;});
+ player.x=0;player.y=0;player.angle=0;player.fuel=maxFuel();player.efficiency=0;steps=0;
+ explored.push({x:0,y:0});
+ showNotice(reason+'！ 起点へ帰還。資金・強化・発見記録は維持。',true);updateDiscovery();saveGame();
+}
+function useEvent(n){
+ const r=rng((seed ^ (n.id*74831) ^ (sortie*103483))|0),p=r();visited.add(n.id);eventsDone++;
+ let message='';
+ if(n.type==='station'){ player.fuel=maxFuel(); player.efficiency=0; message='固定施設：完全補給。遠征の中継拠点として使える。'; } else if(n.type==='blue'){
+   if(p<.56){let gain=26+Math.floor(r()*24);player.fuel=Math.min(100,player.fuel+gain);message='青の信号：燃料 ＋'+gain+'。';}
+   else if(p<.83){let gain=50+Math.floor(r()*21);player.fuel=Math.min(100,player.fuel+gain);message='青の信号：大きな補給 ＋'+gain+'！';}
+   else {let count=scanSignals(160);message='青の信号：周囲を索敵。新たに'+count+'地点を発見！';}
+ }else{
+   if(p<.36){let gain=15+Math.floor(r()*19);player.fuel=Math.min(100,player.fuel+gain);message='緑の信号：予備エネルギー ＋'+gain+'。';}
+   else if(p<.66){player.efficiency=155;message='緑の信号：省エネ効果！ 移動155の間、燃料消費が半減。';}
+   else if(p<.89){let count=scanSignals(190);message='緑の信号：広域スキャン！ 新たに'+count+'地点を発見。';}
+   else {let loss=Math.min(player.fuel,7+Math.floor(r()*10));player.fuel-=loss;message='緑の信号：ノイズ障害。燃料 −'+Math.ceil(loss)+'。';}
+ }
+ if(n.type!=='station'){const money=1+Math.floor(r()*3);addCredits(money);message+=' 資金 +'+money+' C。';}
+ setAutoForward(false);showNotice(message,true);updateDiscovery();saveGame();
+ if(player.fuel<=0)returnToBase('調査中の燃料切れ');
+}
+function scanSignals(radius){let count=0;for(const n of nodes){if(distance(n)<radius&&!discoveries.has(n.id)){discoveries.add(n.id);if(n.type==='station')addCredits(4);count++;}}if(count)saveGame();return count;}
+function encounter(e){
+ if(!e.alive)return;
+ e.alive=false;battles++;addCredits(1);setAutoForward(false);active.clear();
+ const roll=rng((seed^(e.id*8111)^(sortie*1331))|0)();
+ const loss=15+Math.floor(roll*12);
+ player.fuel=Math.max(0,player.fuel-loss);
+ showNotice('赤の敵影と接触！ 燃料 −'+loss+'、資金 +1 C。',true);
+ if(player.fuel<=0)returnToBase('戦闘で燃料切れ');
+}
+function moveEnemies(dt,time){
+ for(const e of enemies){if(!e.alive)continue;
+   const hx=e.hx-e.x,hy=e.hy-e.y,homeDist=Math.hypot(hx,hy),d=distance(e);
+   let target=e.dir+Math.sin(time*.7+e.phase)*.018;
+   if(homeDist>28)target=Math.atan2(hy,hx);
+   else if(d<45 && d>9)target=Math.atan2(player.y-e.y,player.x-e.x);
+   // 方向をゆっくり変える（跳び回る敵ではなく、巡回する光点）。
+   const delta=normAngle(target-e.dir);e.dir=normAngle(e.dir+clamp(delta,-1.6*dt,1.6*dt));
+   e.x+=Math.cos(e.dir)*e.speed*dt;e.y+=Math.sin(e.dir)*e.speed*dt;
+   if(distance(e)<9){encounter(e);if(player.x===0&&player.y===0&&player.fuel===100)break;}
+ }
+}
+function move(dt,time=performance.now()/1000){
+ const forward=(active.has('forward')||autoForward?1:0)-(active.has('backward')?1:0);
+ const turn=(active.has('right')?1:0)-(active.has('left')?1:0);
+ if(turn)player.angle=normAngle(player.angle+turn*1.8*dt);
+ if(forward){
+   const d=forward*flightSpeed()*dt;
+   player.x+=Math.sin(player.angle)*d;player.y+=Math.cos(player.angle)*d;
+   player.distTravel+=Math.abs(d);
+   const discount=player.efficiency>0?.5:1;
+   player.fuel=Math.max(0,player.fuel-Math.abs(d)*fuelCost()*discount);
+   player.efficiency=Math.max(0,player.efficiency-Math.abs(d));
+   if(player.fuel<=0){returnToBase();return;}
+   const reached=Math.hypot(player.x,player.y);
+   if(reached>bestRange){bestRange=reached;
+     const step=Math.floor(bestRange/200);
+     if(step>paidDistanceStep){const award=(step-paidDistanceStep)*2;paidDistanceStep=step;addCredits(award);showNotice('最高到達距離 '+Math.floor(bestRange)+'！ 資金 +'+award+' C。',true);}
+   }
+   if(++steps%7===0){const prev=explored[explored.length-1];if(Math.hypot(prev.x-player.x,prev.y-player.y)>8){explored.push({x:player.x,y:player.y});if(explored.length>500)explored.shift();}}
+ }
+ moveEnemies(dt,time);updateDiscovery();
+}
+function project(n){
+ const dx=n.x-player.x,dy=n.y-player.y,dist=Math.hypot(dx,dy);
+ const angle=normAngle(Math.atan2(dx,dy)-player.angle);
+ if(Math.abs(angle)>FOV*.58||dist>300+upgrades.sensor*90||dist<2.5)return null;
+ const sx=ctxWidth/2+Math.tan(angle)/Math.tan(FOV/2)*ctxWidth/2;
+ const size=clamp(4200/(dist+15),7,177);
+ return {sx,size,dist,cy:ctxHeight*.495+size*.10};
+}
+function ellipse(x,y,rx,ry,color,alpha=1){sc.save();sc.globalAlpha=alpha;sc.fillStyle=color;sc.beginPath();sc.ellipse(x,y,rx,ry,0,0,TAU);sc.fill();sc.restore();}
+function renderBackdrop(t){
+ const w=ctxWidth,h=ctxHeight,hor=h*.495;
+ let sky=sc.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#07121f');sky.addColorStop(.48,'#174558');sky.addColorStop(.52,'#23465b');sky.addColorStop(1,'#061b2b');sc.fillStyle=sky;sc.fillRect(0,0,w,h);
+ for(let i=0;i<14;i++){let s=i*317.13,x=((s-player.angle*180+w*20)%(w+280)+w+280)%(w+280)-140,y=hor+(i%6-2)*14;ellipse(x,y,60+(i%5)*23,5+(i%3)*4,'#acdce4',.035+(i%3)*.016);}
+ for(let i=-9;i<=9;i++){let vanX=w/2+Math.sin(player.angle*1.3+i*.22)*8;sc.beginPath();sc.moveTo(vanX,hor);sc.lineTo(w/2+i*w*.13,h);sc.strokeStyle='rgba(102,187,204,.12)';sc.stroke();}
+ for(let i=0;i<12;i++){let d=17+i*i*4.4,yy=hor+1300/(d+8);if(yy>h)continue;sc.strokeStyle='rgba(93,175,194,'+(0.03+i*.008)+')';sc.beginPath();sc.moveTo(0,yy);sc.lineTo(w,yy);sc.stroke();}
+ for(let i=0;i<40;i++){const a=i*73.1+Math.sin(player.angle)*25,x=(a%w+w)%w,y=(i*47.3%(hor-20))+12;ellipse(x,y,1.1,1.1,'#b7f2fc',.12+.15*((i%4)/4));}
+ sc.fillStyle='rgba(115,227,222,.38)';sc.fillRect(0,hor,w,1);sc.fillStyle='rgba(19,62,81,.18)';sc.fillRect(0,hor,w,h-hor);
+}
+function drawSignal(n,p,t){
+ const {sx,size,cy,dist}=p,type=n.type,used=visited.has(n.id);
+ const color=typeColors[type],alpha=clamp((300+upgrades.sensor*90-dist)/140,.24,1)*(used&&type!=='station'?.28:1),r=size*.5;
+ sc.save();sc.translate(sx,cy);sc.scale(1+Math.sin(t*1.9+n.id)*.04,1+Math.sin(t*1.9+n.id)*.04);
+ sc.globalAlpha=alpha;sc.shadowColor=color;sc.shadowBlur=24;sc.strokeStyle=color;sc.lineWidth=clamp(size*.05,1.3,3);
+ sc.beginPath();sc.arc(0,0,r*.8,0,TAU);sc.stroke();sc.shadowBlur=0;
+ sc.globalAlpha=alpha*.5;sc.beginPath();sc.arc(0,0,r*1.16,t*.28,t*.28+Math.PI*1.15);sc.stroke();sc.globalAlpha=alpha;
+ if(type==='station'){sc.beginPath();sc.arc(0,0,r*.56,0,TAU);sc.stroke();sc.beginPath();sc.moveTo(-r*.68,0);sc.lineTo(r*.68,0);sc.moveTo(0,-r*.68);sc.lineTo(0,r*.68);sc.stroke();} else if(type==='blue'){sc.beginPath();sc.rect(-r*.47,-r*.47,r*.94,r*.94);sc.stroke();sc.beginPath();sc.moveTo(-r*.2,0);sc.lineTo(r*.2,0);sc.moveTo(0,-r*.2);sc.lineTo(0,r*.2);sc.stroke();}
+ else if(type==='green'){sc.beginPath();sc.moveTo(0,-r*.74);sc.lineTo(r*.65,r*.40);sc.lineTo(-r*.65,r*.40);sc.closePath();sc.stroke();}
+ else {sc.beginPath();sc.moveTo(0,-r*.6);sc.lineTo(r*.5,0);sc.lineTo(0,r*.6);sc.lineTo(-r*.5,0);sc.closePath();sc.stroke();}
+ sc.restore();
+ if(dist<86){sc.save();sc.textAlign='center';sc.fillStyle=used?'#7d9ba8':'#d9f5ff';sc.shadowColor='#071a29';sc.shadowBlur=6;sc.font='12px system-ui';sc.fillText((used&&type!=='station'?'調査済み':discoveries.has(n.id)?typeNames[type]:'未知の信号')+' · '+Math.round(dist),sx,cy+r+19);sc.restore();}
+}
+function drawEnemy(e,p,t){
+ const {sx,size,cy,dist}=p,r=size*.5;
+ sc.save();sc.translate(sx,cy);const beat=1+Math.sin(t*4+e.phase)*.13;sc.scale(beat,beat);
+ sc.strokeStyle=typeColors.enemy;sc.lineWidth=clamp(size*.075,2,4);sc.shadowColor='#ff415c';sc.shadowBlur=26;
+ sc.beginPath();sc.moveTo(0,-r*.9);sc.lineTo(r*.7,0);sc.lineTo(0,r*.9);sc.lineTo(-r*.7,0);sc.closePath();sc.stroke();
+ sc.beginPath();sc.arc(0,0,r*.23,0,TAU);sc.stroke();sc.shadowBlur=0;sc.restore();
+ if(dist<130){sc.textAlign='center';sc.fillStyle='#ffd9df';sc.font='12px system-ui';sc.fillText('敵影 · '+Math.round(dist),sx,cy+r+20);}
+}
+function renderScene(t){
+ renderBackdrop(t);let draw=[];
+ for(const n of nodes){const p=project(n);if(p)draw.push({n,p,enemy:false});}
+ for(const e of enemies){if(e.alive){const p=project(e);if(p)draw.push({n:e,p,enemy:true});}}
+ draw.sort((a,b)=>b.p.dist-a.p.dist);
+ for(const entry of draw){if(entry.enemy)drawEnemy(entry.n,entry.p,t);else drawSignal(entry.n,entry.p,t);}
+ const w=ctxWidth,baseY=ctxHeight-75;sc.save();sc.font='10px ui-monospace,monospace';sc.textAlign='center';sc.strokeStyle='rgba(180,239,240,.4)';sc.fillStyle='#b2e1e6';for(let delta=-60;delta<=60;delta+=15){let x=w/2+delta/75*w*.5;sc.beginPath();sc.moveTo(x,baseY);sc.lineTo(x,baseY+(delta%30===0?12:6));sc.stroke();if(delta%30===0)sc.fillText((((player.angle*180/Math.PI+delta+3600)%360)|0)+'°',x,baseY+25);}sc.restore();
+}
+function renderMap(){
+ const w=mpWidth,h=mpWidth,cc=mc;cc.clearRect(0,0,w,h);cc.fillStyle='#071d2b';cc.fillRect(0,0,w,h);
+ const c=w/2,scale=w/250;cc.strokeStyle='rgba(112,172,190,.14)';cc.lineWidth=1;
+ for(let i=-5;i<=5;i++){const pos=c+i*25*scale;cc.beginPath();cc.moveTo(pos,0);cc.lineTo(pos,h);cc.moveTo(0,pos);cc.lineTo(w,pos);cc.stroke();}
+ cc.save();cc.beginPath();cc.rect(0,0,w,h);cc.clip();
+ for(const p of explored){const x=c+(p.x-player.x)*scale,y=c-(p.y-player.y)*scale;const g=cc.createRadialGradient(x,y,0,x,y,33*scale);g.addColorStop(0,'rgba(60,116,132,.25)');g.addColorStop(1,'rgba(60,116,132,0)');cc.fillStyle=g;cc.beginPath();cc.arc(x,y,33*scale,0,TAU);cc.fill();}
+ for(const n of nodes){if(!discoveries.has(n.id))continue;const x=c+(n.x-player.x)*scale,y=c-(n.y-player.y)*scale;if(x<-10||y<-10||x>w+10||y>h+10)continue;cc.fillStyle=typeColors[n.type];cc.globalAlpha=(visited.has(n.id)&&n.type!=='station')?.3:1;cc.beginPath();cc.arc(x,y,n.type==='base'?5:(n.type==='station'?4.5:3.8),0,TAU);cc.fill();cc.globalAlpha=1;}
+ // 赤い敵影は近距離レーダーだけで映る。巡回を地図から読んで避けられる。
+ for(const e of enemies){if(!e.alive||distance(e)>82)continue;const x=c+(e.x-player.x)*scale,y=c-(e.y-player.y)*scale;cc.fillStyle=typeColors.enemy;cc.beginPath();cc.arc(x,y,3.7,0,TAU);cc.fill();}
+ cc.restore();cc.strokeStyle='rgba(132,224,220,.25)';cc.beginPath();cc.arc(c,c,82*scale,0,TAU);cc.stroke();
+ cc.save();cc.translate(c,c);cc.rotate(player.angle);cc.fillStyle='#ffe29c';cc.strokeStyle='#21374a';cc.lineWidth=1;cc.beginPath();cc.moveTo(0,-11);cc.lineTo(-6,8);cc.lineTo(0,4);cc.lineTo(6,8);cc.closePath();cc.fill();cc.stroke();cc.restore();
+}
+function renderHud(){
+ el('fuelText').textContent=Math.ceil(player.fuel)+' / '+maxFuel();el('fuelBar').style.width=(player.fuel/maxFuel()*100)+'%';
+ el('walletText').textContent=credits+' C';el('bestText').textContent=Math.floor(bestRange);renderShop();
+ el('distText').textContent=Math.round(Math.hypot(player.x,player.y));el('foundText').textContent=Math.max(0,discoveries.size-1);
+ el('eventText').textContent=eventsDone+' / '+battles;
+ const bearing=((player.angle*180/Math.PI)%360+360)%360;el('bearing').textContent='方位 '+String(Math.round(bearing)%360).padStart(3,'0')+'°';
+ let ahead=enemies.filter(e=>e.alive&&distance(e)<95&&Math.abs(normAngle(Math.atan2(e.x-player.x,e.y-player.y)-player.angle))<FOV*.45).sort((a,b)=>distance(a)-distance(b))[0];
+ if(ahead){el('frontHint').textContent='警戒：前方に赤い敵影 · '+Math.round(distance(ahead));return;}
+ ahead=nodes.filter(n=>!visited.has(n.id)&&n.type!=='base'&&Math.abs(normAngle(Math.atan2(n.x-player.x,n.y-player.y)-player.angle))<FOV*.45).sort((a,b)=>distance(a)-distance(b))[0];
+ el('frontHint').textContent=ahead&&distance(ahead)<260+upgrades.sensor*90?'前方の信号 · '+Math.round(distance(ahead)):'進路を選んで信号を探そう';
+}
+function frame(time){const dt=Math.min(.05,(time-lastFrame)/1000);lastFrame=time;move(dt,time/1000);renderScene(time/1000);renderMap();renderHud();requestAnimationFrame(frame);}
+const holdButtons=[...document.querySelectorAll('[data-hold]')];
+for(const btn of holdButtons){const k=btn.dataset.hold;
+ btn.addEventListener('pointerdown',e=>{e.preventDefault();btn.setPointerCapture(e.pointerId);if(k==='backward'&&autoForward)setAutoForward(false);active.add(k);btn.classList.add('active');});
+ const end=()=>{active.delete(k);btn.classList.remove('active');};btn.addEventListener('pointerup',end);btn.addEventListener('pointercancel',end);btn.addEventListener('lostpointercapture',end);
+}
+const keyMap={ArrowUp:'forward',w:'forward',W:'forward',ArrowDown:'backward',s:'backward',S:'backward',ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right'};
+window.addEventListener('keydown',e=>{const k=keyMap[e.key];if(k){e.preventDefault();if(k==='backward'&&autoForward)setAutoForward(false);active.add(k);}});
+window.addEventListener('keyup',e=>{const k=keyMap[e.key];if(k){e.preventDefault();active.delete(k);}});
+el('autoForward').addEventListener('click',()=>setAutoForward(!autoForward));
+window.addEventListener('blur',()=>{active.clear();holdButtons.forEach(b=>b.classList.remove('active'));});
+el('action').addEventListener('click',()=>{
+ if(!nearest)return;const n=nearest;
+ if(n.type==='base'){setAutoForward(false);player.fuel=maxFuel();showNotice('起点で燃料を最大まで補給。',true);} else useEvent(n);
+});
+for(const b of document.querySelectorAll('[data-buy]'))b.addEventListener('click',()=>purchase(b.dataset.buy));
+el('newWorld').addEventListener('click',()=>{if(typeof window.confirm==='function'&&!window.confirm('世界と育成を最初からやり直しますか？'))return;seed++;makeWorld(true);});
+const saved=loadGame();makeWorld(false);
+if(saved&&Array.isArray(saved.discoveries)){
+ const valid=new Set(nodes.map(n=>n.id));discoveries=new Set(saved.discoveries.filter(id=>valid.has(id)));discoveries.add(0);
+ updateDiscovery();showNotice('前回の資金と強化を復元。起点から再開します。',true);saveGame();
+}
+resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
