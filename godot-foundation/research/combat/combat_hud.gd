@@ -70,6 +70,7 @@ func _process(dt:float)->void:
     elapsed=0.0
     var equip:Dictionary=Readout.weapon_state(session)
     weapon.text="砲 %s  %.0f/%.0f\n近 %s  %.0f/%.0f\n発動 %s  待機 %.1fs" % [equip["ranged"],equip["ranged_reach"],equip["ranged_damage"],equip["melee"],equip["melee_reach"],equip["melee_damage"],equip["mode"] if equip["mode"]!="" else "射程外",equip["cooldown"]]
+    title.text="戦闘観測・%s" % session.autopilot_mode if session.auto_battle_enabled else "戦闘観測 | Combat Lab"
     var nearby:Array[Dictionary]=Readout.nearest(session)
     var highest:int=0
     for item:Dictionary in nearby:highest=maxi(highest,int(item["danger"]))

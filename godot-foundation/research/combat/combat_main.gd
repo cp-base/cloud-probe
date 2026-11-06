@@ -3,6 +3,7 @@ const ResearchSession=preload("res://research/combat/combat_session.gd")
 const CombatHUD=preload("res://research/combat/combat_hud.gd")
 var combat_hud:CanvasLayer
 var pattern_toggle:Button
+var auto_battle_toggle:Button
 
 func _ready()->void:
     get_tree().auto_accept_quit=false
@@ -24,6 +25,11 @@ func _ready()->void:
     pattern_toggle.text="敵行動の実験：ON" if game.experimental_patterns else "敵行動の実験：OFF"
     combat_hud=CombatHUD.new();combat_hud.session=game;add_child(combat_hud)
     combat_hud.set_collapsed(not fixture)
+    if journey and "--auto" in args:
+        auto_forward=true;auto_button.set_pressed_no_signal(true)
+    if "--autobattle" in args:
+        game.set_auto_battle_enabled(true)
+        auto_battle_toggle.text="自動交戦：ON"
     if not fixture:
         if loaded=="error":_settings()
         elif game.phase=="docked":_facility(game.current_facility)
@@ -34,6 +40,20 @@ func _build_ui()->void:
     pattern_toggle=_button("敵行動の実験：OFF",_toggle_patterns,196)
     pattern_toggle.position=Vector2(380,112)
     root.add_child(pattern_toggle)
+    auto_battle_toggle=_button("自動交戦：OFF",_toggle_autobattle,170)
+    auto_battle_toggle.position=Vector2(595,112)
+    root.add_child(auto_battle_toggle)
+
+func _physics_process(dt:float)->void:
+    if game!=null:
+        var steering:bool=bool(held["left"]) or bool(held["right"]) or Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_RIGHT)
+        var reverse:bool=bool(held["back"]) or Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
+        game.auto_explore_requested=auto_forward and modal==null and not steering and not reverse
+    super._physics_process(dt)
+
+func _toggle_autobattle()->void:
+    game.set_auto_battle_enabled(not game.auto_battle_enabled)
+    auto_battle_toggle.text="自動交戦：ON" if game.auto_battle_enabled else "自動交戦：OFF"
 
 func _toggle_patterns()->void:
     game.set_patterns_enabled(not game.experimental_patterns)

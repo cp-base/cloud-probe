@@ -1,8 +1,18 @@
 extends "res://core/session.gd"
+const AutoPilot=preload("res://research/combat/autopilot.gd")
 const FastPattern=preload("res://research/combat/data/fast_pattern.tres")
 const HeavyPattern=preload("res://research/combat/data/heavy_pattern.tres")
 var experimental_patterns:bool=false
 var _inside_base_tick:bool=false
+var auto_battle_enabled:bool=false
+var auto_explore_requested:bool=false
+var autopilot:RefCounted=AutoPilot.new()
+var autopilot_mode:String="探索"
+
+func set_auto_battle_enabled(value:bool)->void:
+    auto_battle_enabled=value
+    if not value:
+        autopilot.cancel();autopilot_mode="OFF"
 
 func set_patterns_enabled(value:bool)->void:
     experimental_patterns=value
@@ -16,6 +26,7 @@ func _clear_windups()->void:
 func load_game(path:String=SAVE_PATH)->String:
     var result:String=super.load_game(path)
     if result=="ok":
+        autopilot.reset();auto_explore_requested=false;auto_battle_enabled=false;autopilot_mode="OFF"
         experimental_patterns=false
         _clear_windups()
     return result
@@ -25,9 +36,18 @@ func tick(dt:float,forward:float,turn:float)->void:
     # Apply experimental behavior explicitly before the original tick so real travel uses it.
     var active:bool=phase=="travel" and not paused
     _inside_base_tick=active
+    if active and auto_battle_enabled and auto_explore_requested:
+        var navigation:Dictionary=autopilot.control(self,dt,forward,turn)
+        forward=float(navigation["forward"]);turn=float(navigation["turn"])
+    else:
+        if autopilot.mode!="explore":autopilot.cancel()
+    autopilot_mode=("交戦" if autopilot.mode=="battle" else "復帰" if autopilot.mode=="resume" else "探索") if auto_battle_enabled and auto_explore_requested else "OFF"
     if active and experimental_patterns:_apply_patterns(dt)
     super.tick(dt,forward,turn)
     _inside_base_tick=false
+    if phase!="travel":
+        autopilot.cancel()
+        autopilot_mode="OFF"
 
 func _enemies(dt:float)->void:
     # Keep a callable isolated encounter step for research/unit tests.
