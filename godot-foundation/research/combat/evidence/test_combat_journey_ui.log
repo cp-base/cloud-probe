@@ -1,0 +1,16 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションで準備中。
+SESSION 起点ステーションから出発。
+COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false
+PASS JOURNEY_UI journey scene uses normal exploration with save protected
+PASS JOURNEY_UI normal starter enemy, not scripted fixture
+PASS JOURNEY_UI normal exploration starts with compact HUD
+PASS JOURNEY_UI HUD expands via real button
+PASS JOURNEY_UI HUD collapses via real button
+PASS JOURNEY_UI compact HUD fits 540p vertical bounds
+PASS JOURNEY_UI expanded enemy list is scrollable within 540p
+PASS JOURNEY_UI UI held-forward control drives actual Foundation movement
+PASS JOURNEY_UI journey cannot overwrite normal save
+JOURNEY_UI RESULT checks=9 failures=0
