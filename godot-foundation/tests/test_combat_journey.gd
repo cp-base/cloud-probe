@@ -28,6 +28,9 @@ func simulate(patterns:bool,seed_value:int)->Dictionary:
     var incoming:bool=false
     var steps:int=0
     var first_attack_time:float=-1.0
+    var first_hostile_time:float=-1.0
+    var windup_frames:int=0
+    var step_250_position:Dictionary={}
     for i in range(1600):
         if game.phase!="travel" or not bool(enemy.get("alive",false)):break
         var delta:Vector2=enemy["pos"]-game.position
@@ -36,13 +39,17 @@ func simulate(patterns:bool,seed_value:int)->Dictionary:
         var steering:float=clampf(wrapf(target_yaw-game.yaw,-PI,PI)*3.0,-1.0,1.0)
         game.tick(0.05,1.0 if distance>24.0 else 0.0,steering)
         steps=i+1
+        if steps==250:step_250_position={"x":snappedf(float(enemy["pos"].x),0.001),"y":snappedf(float(enemy["pos"].y),0.001)}
+        if bool(enemy.get("windup",false)):windup_frames+=1
         closest=minf(closest,game.position.distance_to(enemy["pos"]))
         seen=seen or Readout.nearest(game).size()>0
         if game.attack_mode!="":
             attacking=true
             if first_attack_time<0.0:first_attack_time=steps*0.05
         for shot:Dictionary in game.projectiles:
-            if bool(shot["hostile"]):incoming=true
+            if bool(shot["hostile"]):
+                incoming=true
+                if first_hostile_time<0.0:first_hostile_time=steps*0.05
         exchanged=exchanged or game.hp<initial_hp or not bool(enemy.get("alive",false)) or float(enemy["hp"])<float(enemy["max_hp"])
     check(game.position.distance_to(beginning)>50.0 or game.phase=="docked","player moved from station patterns=%s" % patterns)
     check(closest<50.0,"navigation reached natural encounter patterns=%s" % patterns)
@@ -50,6 +57,7 @@ func simulate(patterns:bool,seed_value:int)->Dictionary:
     check(attacking,"base automatic weapon attack activated patterns=%s" % patterns)
     check(exchanged,"combat changed HP or dealt damage patterns=%s" % patterns)
     check(original_ids.has(enemy_id) and not game.world.objects.has("combat-demo-heavy"),"no injected fixture enemies patterns=%s" % patterns)
+    if enemy["type"]=="heavy":check((windup_frames>0)==patterns,"heavy experimental windup exists only when enabled patterns=%s" % patterns)
     var path:String="res://tests/.state/journey-%s-%s.json" % [enemy["type"],"patterns" if patterns else "baseline"]
     var saved:bool=game.save_game(path)
     var restored:RefCounted=Session.new()
@@ -57,7 +65,7 @@ func simulate(patterns:bool,seed_value:int)->Dictionary:
     check(saved and status=="ok","natural journey state saved and reloaded patterns=%s" % patterns)
     if status=="ok":
         check(restored.campaign.credits==game.campaign.credits and restored.world.objects.has(enemy_id),"credits and natural encounter persist patterns=%s" % patterns)
-    return {"patterns":patterns,"seed":seed_value,"steps":steps,"closest":snappedf(closest,0.01),"first_attack_s":first_attack_time,"damage_or_hit":exchanged,"incoming":incoming,"kills":game.kills,"final_phase":game.phase,"remaining_hp":game.hp,"enemy_type":enemy["type"],"enemy_hp":enemy["hp"]}
+    return {"patterns":patterns,"seed":seed_value,"steps":steps,"closest":snappedf(closest,0.01),"first_attack_s":first_attack_time,"first_hostile_s":first_hostile_time,"windup_frames":windup_frames,"enemy_pos_at_12_5s":step_250_position,"damage_or_hit":exchanged,"incoming":incoming,"kills":game.kills,"final_phase":game.phase,"remaining_hp":game.hp,"enemy_type":enemy["type"],"enemy_hp":enemy["hp"]}
 
 func _init()->void:call_deferred("run")
 func run()->void:
@@ -77,6 +85,14 @@ func run()->void:
         if not seed_by_type.has(enemy_type):continue
         for patterns in [false,true]:
             results.append(simulate(patterns,int(seed_by_type[enemy_type])))
+    var heavy_off:Dictionary={}
+    var heavy_on:Dictionary={}
+    for journey:Dictionary in results:
+        if journey["enemy_type"]!="heavy":continue
+        if journey["patterns"]:heavy_on=journey
+        else:heavy_off=journey
+    if not heavy_off.is_empty() and not heavy_on.is_empty():
+        check(float(heavy_off["first_hostile_s"])>=0.0 and float(heavy_on["first_hostile_s"])>float(heavy_off["first_hostile_s"])+0.5,"heavy windup measurably delays first hostile projectile in natural encounter")
     var report:Dictionary={"checks":checks,"failures":failed,"seeds":seed_by_type,"journeys":results}
     var path:="res://tests/.state/combat-journey-result.json"
     var file:=FileAccess.open(path,FileAccess.WRITE)
