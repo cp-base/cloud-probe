@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/layouts/modal_adaptive.gd" id="1_modal"]
 
 [node name="ModalShell" type="PanelContainer"]
 anchor_right = 1.0
@@ -7,6 +9,7 @@ offset_left = 22.0
 offset_top = 23.0
 offset_right = -22.0
 offset_bottom = -23.0
+script = ExtResource("1_modal")
 
 [node name="Body" type="VBoxContainer" parent="."]
 theme_override_constants/separation = 10
