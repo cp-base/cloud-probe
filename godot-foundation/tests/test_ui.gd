@@ -12,6 +12,10 @@ func run()->void:
     main.set_physics_process(false)
     # No test action may write the live campaign. All following state is a fixture.
     main.game.allow_save=false
+    var has_floor:bool=false
+    for child:Node in main.get_children():
+        if child is MeshInstance3D and child.mesh.get_class()=="PlaneMesh":has_floor=true
+    check(not has_floor and main.camera.position.y==0.0,"floating view has no floor plane or human eye-height offset")
     main.game.phase="docked";main.game.current_facility="base";main.game.position=Vector2.ZERO
     main._facility("base")
     await process_frame

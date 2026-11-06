@@ -2,13 +2,10 @@ extends Node3D
 const Session=preload("res://core/session.gd")
 const Catalog=preload("res://data/catalog.gd")
 const LightShader=preload("res://visuals/light.gdshader")
-const GroundShader=preload("res://visuals/ground.gdshader")
 const MapView=preload("res://ui/map_view.gd")
 var game:RefCounted
 var camera:Camera3D
 var environment:Environment
-var ground:MeshInstance3D
-var ground_material:ShaderMaterial
 var markers:Dictionary={}
 var shots:Dictionary={}
 var effect_nodes:Array[MeshInstance3D]=[]
@@ -49,16 +46,20 @@ func _ready()->void:
 func _build_world()->void:
     environment=Environment.new();environment.background_mode=Environment.BG_SKY
     var sky_material:=ProceduralSkyMaterial.new()
-    sky_material.sky_top_color=Color("040b19");sky_material.sky_horizon_color=Color("16313d")
-    sky_material.ground_bottom_color=Color("05121b");sky_material.ground_horizon_color=Color("16313d")
+    sky_material.sky_top_color=Color("07141f");sky_material.sky_horizon_color=Color("102731")
+    sky_material.ground_bottom_color=Color("07141f");sky_material.ground_horizon_color=Color("102731")
     sky_material.sky_energy_multiplier=0.6
+    sky_material.ground_energy_multiplier=0.6
+    sky_material.sky_curve=0.5;sky_material.ground_curve=0.5
     var sky:=Sky.new();sky.sky_material=sky_material;environment.sky=sky
     environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
     environment.glow_intensity=0.16;environment.glow_hdr_threshold=0.9
     var world_environment:=WorldEnvironment.new();world_environment.environment=environment;add_child(world_environment)
-    ground=MeshInstance3D.new();var plane:=PlaneMesh.new();plane.size=Vector2(1600,1600);ground.mesh=plane
-    ground_material=ShaderMaterial.new();ground_material.shader=GroundShader;ground.material_override=ground_material;add_child(ground)
     camera=Camera3D.new();camera.fov=72;camera.far=700;add_child(camera);camera.current=true
+
+func _object_height(object:Dictionary)->float:
+    var phase:float=object.get("phase",0.0)
+    return sin(phase)*2.0+sin(game.campaign.world_time*0.3+phase)*0.2
 
 func _marker(color:Color,appearance:int,size_value:float,shape:=0)->MeshInstance3D:
     var node:=MeshInstance3D.new();var quad:=QuadMesh.new();quad.size=Vector2(size_value,size_value);node.mesh=quad
@@ -76,14 +77,14 @@ func _sync_markers()->void:
             var profile:Resource=Catalog.enemy(object["type"]) if hostile else null
             var color:Color=profile.color if hostile else (Color("67ffcb") if object["kind"]=="signal" else Color("55d5ff"))
             markers[key]=_marker(color,1 if hostile or object["kind"]=="signal" else 2,7.0 if hostile else 6.0,profile.shape if hostile else 3)
-        markers[key].position=Vector3(object["pos"].x,1.9,object["pos"].y)
+        markers[key].position=Vector3(object["pos"].x,_object_height(object),object["pos"].y)
     for facility:Dictionary in game.world.facilities.values():
         if game.position.distance_to(facility["pos"])>650.0:continue
         var key:String="f:"+facility["id"];live[key]=true
         var color:=Color("ffd18a") if game.facility_built(facility["id"]) else Color("a79ca3")
         if not markers.has(key):markers[key]=_marker(color,1,13.0,3)
         markers[key].material_override.set_shader_parameter("signal_color",color)
-        markers[key].position=Vector3(facility["pos"].x,1.9,facility["pos"].y)
+        markers[key].position=Vector3(facility["pos"].x,0.0,facility["pos"].y)
     for key:String in markers.keys():
         if not live.has(key):markers[key].queue_free();markers.erase(key)
 
@@ -331,21 +332,26 @@ func _physics_process(dt:float)->void:
     _visuals(dt)
 
 func _visuals(dt:float)->void:
-    camera.position=Vector3(game.position.x,1.9,game.position.y);camera.rotation=Vector3(0,game.yaw,0)
-    ground.position=Vector3(game.position.x,0,game.position.y);ground_material.set_shader_parameter("viewer_position",camera.position)
+    camera.position=Vector3(game.position.x,0.0,game.position.y);camera.rotation=Vector3(0,game.yaw,0)
     environment.glow_enabled=bool(game.campaign.settings.get("glow",false))
     for key:String in markers:
         var node:MeshInstance3D=markers[key]
         if not key.begins_with("f:"):
             var object:Dictionary=game.world.objects.get(key,{})
             node.visible=not object.is_empty() and object["alive"]
-            if node.visible:node.position=Vector3(object["pos"].x,1.9,object["pos"].y)
+            if node.visible:node.position=Vector3(object["pos"].x,_object_height(object),object["pos"].y)
         if node.position.distance_squared_to(camera.position)>0.01:node.look_at(camera.position,Vector3.UP,true)
     var live:Dictionary={}
     for shot:Dictionary in game.projectiles:
         var key:String=str(shot["id"]);live[key]=true
         if not shots.has(key):shots[key]=_marker(Color("ff7b78") if shot["hostile"] else Color("a1e9ff"),2,1.7)
-        var node:MeshInstance3D=shots[key];node.position=Vector3(shot["pos"].x,1.65,shot["pos"].y)
+        var shot_height:=0.0
+        if not shot["hostile"]:
+            var target:Dictionary=game.world.objects.get(shot["target"],{})
+            if not target.is_empty():
+                var full_distance:float=maxf(0.01,shot["origin"].distance_to(target["pos"]))
+                shot_height=_object_height(target)*clampf(1.0-shot["pos"].distance_to(target["pos"])/full_distance,0.0,1.0)
+        var node:MeshInstance3D=shots[key];node.position=Vector3(shot["pos"].x,shot_height,shot["pos"].y)
         if node.position.distance_squared_to(camera.position)>0.01:node.look_at(camera.position,Vector3.UP,true)
     for key:String in shots.keys():
         if not live.has(key):shots[key].queue_free();shots.erase(key)
@@ -354,7 +360,7 @@ func _visuals(dt:float)->void:
         var node:=effect_nodes[i];node.visible=i<game.effects.size()
         if not node.visible:continue
         var effect:Dictionary=game.effects[i];var age:float=effect["age"]
-        node.position=Vector3(effect["pos"].x,1.9,effect["pos"].y);node.scale=Vector3.ONE*(1.0+age*12)
+        node.position=Vector3(effect["pos"].x,0.0,effect["pos"].y);node.scale=Vector3.ONE*(1.0+age*12)
         node.material_override.set_shader_parameter("gain",maxf(0,1-age/0.65))
         node.material_override.set_shader_parameter("signal_color",Color("85e8ff") if effect["kind"]=="collect" else Color("ffb68a"))
         if node.position.distance_squared_to(camera.position)>0.01:node.look_at(camera.position,Vector3.UP,true)
@@ -378,7 +384,7 @@ func _labels()->void:
     var text_value:String=""
     if not target.is_empty():point=target["pos"];text_value=target["title"]+" %.0f" % game.position.distance_to(point)
     elif not light.is_empty():point=light["pos"];text_value="光まで %.0f" % game.position.distance_to(point)
-    var p:=Vector3(point.x,1.9,point.y)
+    var p:=Vector3(point.x,_object_height(light) if target.is_empty() and not light.is_empty() else 0.0,point.y)
     guide.visible=text_value!="" and not camera.is_position_behind(p) and camera.position.distance_to(p)>1.0
     if guide.visible:guide.position=camera.unproject_position(p)+Vector2(-50,32);guide.text=text_value
     var enemies:Array[Dictionary]=[]
@@ -387,12 +393,12 @@ func _labels()->void:
     enemies.sort_custom(func(a:Dictionary,b:Dictionary)->bool:return game.position.distance_squared_to(a["pos"])<game.position.distance_squared_to(b["pos"]))
     var shown:=0
     for enemy in enemies:
-        var world_point:=Vector3(enemy["pos"].x,1.9,enemy["pos"].y)
+        var world_point:=Vector3(enemy["pos"].x,_object_height(enemy),enemy["pos"].y)
         if camera.is_position_behind(world_point):continue
         var screen:=camera.unproject_position(world_point)
         if screen.x<0 or screen.x>get_viewport().get_visible_rect().size.x or shown>=enemy_labels.size():continue
         var label:=enemy_labels[shown];label.visible=true;label.position=screen+Vector2(-65,28)
-        label.text="%s 深度%d　%.0f" % [Catalog.enemy(enemy["type"]).title,int(enemy["tier"])+1,enemy["hp"]];shown+=1
+        label.text="%s・%s 深度%d　%.0f" % [Catalog.enemy(enemy["type"]).title,"巡回" if enemy.get("behavior","wait")=="patrol" else "待機",int(enemy["tier"])+1,enemy["hp"]];shown+=1
     for i in range(shown,enemy_labels.size()):enemy_labels[i].visible=false
 
 func _unhandled_input(event:InputEvent)->void:

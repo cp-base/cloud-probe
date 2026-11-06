@@ -1,13 +1,15 @@
 # CLOUD / PROBE — Godot制作の調査・検討メモ
 
-> 共有版：ローカルの制作記録からPC固有のユーザーパスを一般化しました。旧模型の作業パスは当時の履歴です。現在の本体はリポジトリの `godot-foundation/`。
+> 共有版：PC固有のユーザーパスを一般化しています。旧模型のパスは当時の履歴です。現在の本体はリポジトリの `godot-foundation/`。
 2026-11-06開始のチャットでの調査記録。初回記録の最終確認時刻：2026-11-06 15:00 UTC。
 
 ## このメモの目的
 
 Godotの標準機能、公式サンプル、既存の試作を見ながら、CLOUD / PROBEをどう設計・制作するか検討した過程を振り返るためのメモ。ユーザーの依頼に基づくローカルの作業記録であり、リポジトリの正式仕様や作業ルールとして採用した文書ではない。
 
-現在：[全体模型の設計図 v0.2](cloud-probe-blueprint.md)／[全体模型の制作手順書 v0.2](cloud-probe-build-plan.md)／[模型の案内](cloud-probe-prototype-guide.md)。v0.2は全体の土台を実装・接続した版。以下は調査・試作の履歴。過去の仮案と、その後の訂正を区別して読む。
+現在：[全体模型の設計図 v0.3](cloud-probe-blueprint.md)／[全体模型の制作手順書 v0.3](cloud-probe-build-plan.md)／[模型の案内](cloud-probe-prototype-guide.md)。v0.2で全体の土台を接続し、v0.3で試遊を受けた床なし表示・起点の敵・待機と巡回を追加。以下は調査・試作の履歴。過去の仮案と、その後の訂正を区別して読む。
+
+GitHubへの共有：2026-11-07に`main`へ反映。[共有記録](cloud-probe-github-sharing.md)／[GitHubの設計・制作記録の入口](https://github.com/cp-base/cloud-probe/blob/main/docs/godot-foundation/README.md)。共有版の案内はPC固有のパスを一般化している。
 
 ## 会話で確認した方向と保留事項
 

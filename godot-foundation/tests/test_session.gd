@@ -33,17 +33,21 @@ func run()->void:
     keys.reverse()
     for key in keys:b.generate_chunk(key)
     var stable:bool=a.objects.size()==b.objects.size()
-    var kinds:Dictionary={};var points:Array[Vector2]=[];var minimum:float=INF
+    var kinds:Dictionary={};var behaviors:Dictionary={};var points:Array[Vector2]=[];var minimum:float=INF
     for id:String in a.objects:
         var o:Dictionary=a.objects[id]
         stable=stable and b.objects.has(id) and o==b.objects[id]
-        if o["kind"]=="enemy":kinds[o["type"]]=true
-        if not id.ends_with(":start"):points.append(o["pos"])
+        if o["kind"]=="enemy":kinds[o["type"]]=true;behaviors[o["behavior"]]=true
+        if not id.ends_with(":start") and not id.ends_with(":start-enemy"):points.append(o["pos"])
     for i in range(points.size()):
         for j in range(i):minimum=minf(minimum,points[i].distance_to(points[j]))
     check(stable,"seed/sortie/chunk: visit order independent")
-    check(a.objects.size()<=170 and minimum>=150.0,"sparse generation: <=1 per 480 sector; gap >=150 (starter excluded)")
+    check(a.objects.size()<=171 and minimum>=150.0,"sparse generation: <=1 per 480 sector; gap >=150 (origin encounters excluded)")
     check(kinds.size()==4,"all four enemy types coexist in same world")
+    check(behaviors.size()==2,"wait and patrol coexist independently of combat type")
+    var near_enemy:Dictionary=a.objects["1:start-enemy"]
+    var before_nearby:int=a.objects.size();a.ensure_nearby(Vector2.ZERO)
+    check(near_enemy["kind"]=="enemy" and near_enemy["behavior"]=="wait" and near_enemy["pos"].length()<200.0 and a.objects.size()==before_nearby,"one extra enemy near origin; nearby generation cannot duplicate it")
     var s:RefCounted=Session.new()
     check(s.max_fuel()/s.fuel_cost()<300 and s.speed()==6,"initial reach far below 10000 and slow speed")
     s.depart("base")
@@ -67,6 +71,20 @@ func run()->void:
     check(not s.buy_upgrade("facility_2","range"),"remote facility cannot apply upgrades")
     s.depart("base")
     check(is_equal_approx(s.fuel,s.max_fuel()),"next departure uses upgraded full capacity")
+    var patrol_test:RefCounted=Session.new();patrol_test.depart("base");patrol_test.world.objects.clear()
+    var patroller:Dictionary=enemy_for(patrol_test,Vector2(200,0))
+    var starting_point:Vector2=patroller["pos"]
+    patrol_test._enemies(1.0)
+    check(patroller["pos"]==starting_point,"waiting and legacy enemies stay still outside detection")
+    patroller["behavior"]="patrol";patroller["patrol_heading"]=PI/2;patroller["patrol_leg"]=0
+    var turned:bool=false;var max_offset:float=0.0
+    for i in range(1600):
+        patrol_test._enemies(0.05)
+        max_offset=maxf(max_offset,patroller["pos"].distance_to(patroller["home"]))
+        if patroller["patrol_leg"]==1:turned=true
+    check(turned and max_offset<=30.01 and patroller["pos"]!=starting_point,"patroller moves without detecting player and turns within radius 30")
+    var paused_point:Vector2=patroller["pos"];patrol_test.paused=true;patrol_test.tick(5,0,0)
+    check(patroller["pos"]==paused_point,"pause stops patrol as well as pursuit")
     # Explicit fixtures below exercise hard-to-reach states, not claims of normal completion.
     s.world.objects.clear()
     var e:Dictionary=enemy_for(s,s.position+Vector2(0,-25))
@@ -137,12 +155,15 @@ func run()->void:
     # Mid-flight save, including damaged enemy, used light and in-flight attack.
     s.add_marker("save-test");s.buy_goods("base");s.depart("base");s.world.objects.clear()
     e=enemy_for(s,s.position+Vector2(0,-20));e["hp"]=17
+    e["behavior"]="patrol";e["patrol_heading"]=0.7;e["patrol_leg"]=1
     s.world.objects["used-light"]={"id":"used-light","kind":"light","pos":s.position,"home":s.position,"alive":false,"phase":0.0,"reward":9,"fuel":9.0}
     s.attack_cooldown=1.23;s.fire(s.position,e["id"],7,40,false);s.fuel=56;s.position=Vector2(1,-2)
     var stored:bool=s.save_game(PATH)
     var loaded:RefCounted=Session.new();var restored:String=loaded.load_game(PATH)
     check(stored and restored=="ok" and loaded.paused and loaded.phase=="travel" and loaded.position==s.position and loaded.fuel==56 and loaded.attack_cooldown==1.23 and loaded.projectiles.size()==1 and loaded.world.objects[e["id"]]["hp"]==17,"mid-flight save restores position, fuel, cooldown, projectile and enemy HP; resumes paused")
     check(loaded.campaign.markers.size()==1 and loaded.campaign.cargo==s.campaign.cargo and loaded.campaign.job==s.campaign.job,"save restores cargo, memo and claimed survey")
+    var restored_enemy:Dictionary=loaded.world.objects[e["id"]]
+    check(restored_enemy["behavior"]=="patrol" and restored_enemy["patrol_heading"]==0.7 and restored_enemy["patrol_leg"]==1,"save restores individual behavior and patrol direction")
     var loaded_cash:int=loaded.campaign.credits
     loaded.paused=false;loaded.tick(0.01,0,0)
     check(not loaded.world.objects["used-light"]["alive"] and loaded.campaign.credits==loaded_cash,"reloading cannot regenerate or recollect a used light in the same sortie")

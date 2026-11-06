@@ -265,6 +265,15 @@ func _enemies(dt:float)->void:
             if profile.keep_distance>0 and distance<profile.keep_distance:
                 var away:Vector2=(p-position).normalized();p+=away*profile.speed*dt
             elif distance>maxf(profile.melee_range*0.8,profile.ranged_range*0.75):p=p.move_toward(position,profile.speed*dt)
+        elif enemy.get("behavior","wait")=="patrol":
+            var heading:float=enemy.get("patrol_heading",0.0)
+            var axis:=Vector2(cos(heading),sin(heading))
+            var leg:int=int(enemy.get("patrol_leg",0))
+            var destination:=home+axis*(30.0 if leg==0 else -30.0)
+            if p.distance_to(destination)<=0.5:
+                leg=1-leg;enemy["patrol_leg"]=leg
+                destination=home+axis*(30.0 if leg==0 else -30.0)
+            p=p.move_toward(destination,profile.speed*0.35*dt)
         elif p.distance_to(home)>3.0:p=p.move_toward(home,profile.speed*dt)
         enemy["pos"]=p;distance=p.distance_to(position)
         if enemy["cooldown"]>0:continue

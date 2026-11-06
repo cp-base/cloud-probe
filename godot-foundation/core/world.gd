@@ -32,6 +32,14 @@ func reset_sortie(value:int)->void:
     var point:=Vector2(sin(angle),-cos(angle))*rng.randf_range(85.0,115.0)
     var id:="%d:start" % sortie_id
     objects[id]=make_object(id,"light",point,rng)
+    # One additional encounter near the origin; ordinary sector density is unchanged.
+    var direction:=point.normalized()
+    var side:=direction.orthogonal()
+    if facilities["facility_0"]["pos"].dot(side)>0:side=-side
+    var enemy_id:="%d:start-enemy" % sortie_id
+    var enemy_point:=direction*170.0+side*55.0
+    objects[enemy_id]=make_object(enemy_id,"enemy",enemy_point,rng)
+    objects[enemy_id]["behavior"]="wait"
 
 func ensure_nearby(position:Vector2)->void:
     var center:=Vector2i(floori(position.x/CHUNK),floori(position.y/CHUNK))
@@ -65,6 +73,9 @@ func make_object(id:String,kind:String,point:Vector2,rng:RandomNumberGenerator)-
         var tier:=floori(point.length()/800.0)
         var strength:=pow(1.7,tier)
         result.merge({"type":profile.id,"tier":tier,"max_hp":profile.hp*strength,"hp":profile.hp*strength,"damage":profile.damage*strength,"cooldown":rng.randf_range(0.1,0.8)})
+        result["behavior"]="patrol" if rng.randf()<0.5 else "wait"
+        result["patrol_heading"]=rng.randf_range(-PI,PI)
+        result["patrol_leg"]=0
     elif kind=="light":
         result["reward"]=rng.randi_range(1,2)
         result["fuel"]=rng.randf_range(14.0,24.0) if rng.randf()<0.65 else 0.0
