@@ -9,8 +9,9 @@ func check(ok:bool,title:String)->void:
     if ok:print("PASS JOURNEY ",title)
     else:failed+=1;push_error("FAIL JOURNEY "+title)
 
-func simulate(patterns:bool)->Dictionary:
+func simulate(patterns:bool,seed_value:int)->Dictionary:
     var game:RefCounted=Session.new()
+    game.new_campaign(seed_value)
     game.experimental_patterns=patterns
     check(game.depart("base"),"departure works patterns=%s" % patterns)
     var original_ids:Array=game.world.objects.keys()
@@ -49,19 +50,34 @@ func simulate(patterns:bool)->Dictionary:
     check(attacking,"base automatic weapon attack activated patterns=%s" % patterns)
     check(exchanged,"combat changed HP or dealt damage patterns=%s" % patterns)
     check(original_ids.has(enemy_id) and not game.world.objects.has("combat-demo-heavy"),"no injected fixture enemies patterns=%s" % patterns)
-    var path:String="res://tests/.state/journey-%s.json" % ("patterns" if patterns else "baseline")
+    var path:String="res://tests/.state/journey-%s-%s.json" % [enemy["type"],"patterns" if patterns else "baseline"]
     var saved:bool=game.save_game(path)
     var restored:RefCounted=Session.new()
     var status:String=restored.load_game(path) if saved else "error"
     check(saved and status=="ok","natural journey state saved and reloaded patterns=%s" % patterns)
     if status=="ok":
         check(restored.campaign.credits==game.campaign.credits and restored.world.objects.has(enemy_id),"credits and natural encounter persist patterns=%s" % patterns)
-    return {"patterns":patterns,"steps":steps,"closest":snappedf(closest,0.01),"first_attack_s":first_attack_time,"damage_or_hit":exchanged,"incoming":incoming,"kills":game.kills,"final_phase":game.phase,"remaining_hp":game.hp,"enemy_type":enemy["type"],"enemy_hp":enemy["hp"]}
+    return {"patterns":patterns,"seed":seed_value,"steps":steps,"closest":snappedf(closest,0.01),"first_attack_s":first_attack_time,"damage_or_hit":exchanged,"incoming":incoming,"kills":game.kills,"final_phase":game.phase,"remaining_hp":game.hp,"enemy_type":enemy["type"],"enemy_hp":enemy["hp"]}
 
 func _init()->void:call_deferred("run")
 func run()->void:
-    var results:Array=[simulate(false),simulate(true)]
-    var report:Dictionary={"checks":checks,"failures":failed,"journeys":results}
+    var seed_by_type:Dictionary={}
+    for seed_value in range(71127,71327):
+        var probe:RefCounted=Session.new()
+        probe.new_campaign(seed_value)
+        if not probe.depart("base"):continue
+        var start_id:String="%d:start-enemy" % probe.world.sortie_id
+        var natural:Dictionary=probe.world.objects.get(start_id,{})
+        if not natural.is_empty() and not seed_by_type.has(natural["type"]):
+            seed_by_type[natural["type"]]=seed_value
+        if seed_by_type.size()==4:break
+    check(seed_by_type.size()==4,"real world generation supplied all 4 enemy types")
+    var results:Array=[]
+    for enemy_type in ["melee","artillery","fast","heavy"]:
+        if not seed_by_type.has(enemy_type):continue
+        for patterns in [false,true]:
+            results.append(simulate(patterns,int(seed_by_type[enemy_type])))
+    var report:Dictionary={"checks":checks,"failures":failed,"seeds":seed_by_type,"journeys":results}
     var path:="res://tests/.state/combat-journey-result.json"
     var file:=FileAccess.open(path,FileAccess.WRITE)
     if file!=null:file.store_string(JSON.stringify(report,"  "));file.close()
