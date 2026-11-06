@@ -1,0 +1,27 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS #1 seed / sortie / chunk generation is independent of visit order
+PASS #2 same object IDs including v0.3 start encounter
+PASS #3 repeat visit cannot regenerate or duplicate chunk objects
+PASS #4 actual path marks multiple explored chunks
+PASS #5 stationary repeated updates do not count as a new revisit
+PASS #6 re-entering a visited section counts as a revisit
+PASS #7 waypoints support ordered route legs
+PASS #8 invalid and immediate repeated route points are rejected
+PASS #9 world boundary rejects out-of-bounds waypoint
+PASS #10 scan reveals facility intel and surveyed chunks
+PASS #11 Foundation Storage writes independent navigation data
+PASS #12 Foundation Storage reads navigation save without schema changes
+PASS #13 position and sortie id survive restart
+PASS #14 world object positions, HP and generated-section set survive restart
+PASS #15 visited and surveyed cells survive restart
+PASS #16 waypoints and route survive restart
+PASS #17 revisit after restart does not duplicate generated entities
+PASS #18 fixed facilities retain their coordinates on the next sortie
+PASS #19 navigation memory retained between sorties
+PASS #20 dynamic objects are explicitly regenerated per sortie
+PASS #21 old save with no navigation section produces empty ledger
+PASS #22 dangling route target is filtered on load
+PASS #23 negative chunk coordinates use floor, not truncation
+PASS #24 serialized negative and fractional positions roundtrip
+RESULT 24/24 tests passed, failures=0
