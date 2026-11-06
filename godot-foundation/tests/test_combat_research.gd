@@ -53,6 +53,21 @@ func run()->void:
     var saved:bool=s.save_game(camp_path)
     var reloaded:RefCounted=Session.new();var restored:String=reloaded.load_game(camp_path)
     check(saved and restored=="ok" and reloaded.world.objects.has(original["id"]),"existing session save/load stays connected")
+    var active:RefCounted=Session.new();active.depart("base");active.world.objects.clear()
+    var real_heavy:Dictionary=enemy_at(active,"heavy",Vector2(0,-20),0.0)
+    active.set_patterns_enabled(true)
+    active.tick(0.05,0.0,0.0)
+    check(bool(real_heavy.get("windup",false)) and active.hp==active.max_hp(),"real Session.tick starts heavy telegraph")
+    active.set_patterns_enabled(false)
+    check(not real_heavy.has("windup"),"disabling experimental patterns removes transient world flags")
+    real_heavy["cooldown"]=0.0
+    active.set_patterns_enabled(true)
+    active.tick(0.05,0.0,0.0)
+    var during_path:="res://tests/.state/heavy-mid-windup.json"
+    var during_saved:bool=active.save_game(during_path)
+    var active_loaded:RefCounted=Session.new()
+    var during_status:String=active_loaded.load_game(during_path) if during_saved else "error"
+    check(during_saved and during_status=="ok" and not active_loaded.world.objects[real_heavy["id"]].has("windup"),"loading mid-telegraph clears transient flags safely")
     var result_path:="res://tests/.state/combat-research-result.json"
     var file:=FileAccess.open(result_path,FileAccess.WRITE)
     if file!=null:file.store_string(JSON.stringify({"checks":checks,"failures":failed}));file.close()

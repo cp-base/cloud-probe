@@ -17,7 +17,7 @@ func _ready()->void:
         game.new_campaign(71127)
         game.depart("base")
         game.allow_save=false
-        game.experimental_patterns="--patterns" in args
+        game.set_patterns_enabled("--patterns" in args)
     else:
         game.experimental_patterns="--patterns" in args
     _build_world();_build_ui();_sync_markers();_visuals(0.0)
@@ -36,7 +36,7 @@ func _build_ui()->void:
     root.add_child(pattern_toggle)
 
 func _toggle_patterns()->void:
-    game.experimental_patterns=not game.experimental_patterns
+    game.set_patterns_enabled(not game.experimental_patterns)
     pattern_toggle.text="敵行動の実験：ON" if game.experimental_patterns else "敵行動の実験：OFF"
 
 func _start_fixture()->void:
@@ -44,7 +44,7 @@ func _start_fixture()->void:
     game.depart("base")
     game.world.objects.clear()
     game.allow_save=false
-    game.experimental_patterns=true
+    game.set_patterns_enabled(true)
     var profiles:Array=["melee","artillery","fast","heavy"]
     var points:Array=[Vector2(-22,-30),Vector2(22,-52),Vector2(-36,-69),Vector2(36,-86)]
     for i in range(profiles.size()):
