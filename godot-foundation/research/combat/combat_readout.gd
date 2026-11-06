@@ -11,14 +11,10 @@ static func enemy_state(session:RefCounted,enemy:Dictionary)->Dictionary:
     var distance:float=session.position.distance_to(enemy["pos"])
     var reach:float=maxf(profile.melee_range,profile.ranged_range)
     var cooldown:float=float(enemy.get("cooldown",0.0))
-    var incoming:bool=false
-    for shot:Dictionary in session.projectiles:
-        if bool(shot.get("hostile",false)):incoming=true;break
     var risk:int=0
     if distance<profile.detection:risk=1
     if distance<=reach:risk=2
     if distance<=reach and cooldown<=0.4:risk=3
-    if incoming:risk=3
     var state:String="待機 / 遠方"
     if risk==1:state="追跡・接近"
     elif risk==2:state="敵の射程内"

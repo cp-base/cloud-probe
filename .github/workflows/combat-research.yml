@@ -10,7 +10,7 @@ on:
       - '.github/workflows/combat-research.yml'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   godot:
     runs-on: ubuntu-latest
@@ -38,6 +38,11 @@ jobs:
           for test in test_session test_ui test_combat_research; do
             godot --headless --path godot-foundation --script "res://tests/$test.gd" | tee "/tmp/$test.log"
           done
+      - name: Install CJK fonts for screenshot evidence
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          fc-cache -f
       - name: Capture fixture screenshot
         shell: bash
         run: |
@@ -50,3 +55,16 @@ jobs:
             /tmp/*.log
             godot-foundation/research/combat/evidence/*.png
           if-no-files-found: warn
+
+      - name: Commit runtime evidence to isolated research branch
+        if: success()
+        shell: bash
+        run: |
+          mkdir -p godot-foundation/research/combat/evidence
+          cp /tmp/import.log /tmp/test_session.log /tmp/test_ui.log /tmp/test_combat_research.log /tmp/capture.log godot-foundation/research/combat/evidence/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add godot-foundation/research/combat/evidence/
+          git diff --cached --quiet && exit 0
+          git commit -m "test(combat): attach Godot run logs and screenshot [skip ci]"
+          git push origin HEAD:research/combat

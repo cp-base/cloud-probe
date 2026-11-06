@@ -15,6 +15,7 @@ func _ready()->void:
     else:
         game.experimental_patterns="--patterns" in args
     _build_world();_build_ui();_sync_markers();_visuals(0.0)
+    pattern_toggle.text="敵行動の実験：ON" if game.experimental_patterns else "敵行動の実験：OFF"
     combat_hud=CombatHUD.new();combat_hud.session=game;add_child(combat_hud)
     if not fixture:
         if loaded=="error":_settings()

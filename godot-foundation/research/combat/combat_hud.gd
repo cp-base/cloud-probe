@@ -48,7 +48,11 @@ func _process(dt:float)->void:
     var nearby:Array[Dictionary]=Readout.nearest(session)
     var highest:int=0
     for item:Dictionary in nearby:highest=maxi(highest,int(item["danger"]))
-    threat.text="敵反応 %d　危険度 %s" % [nearby.size(),["安全","探知","射程内","警戒！"][highest]]
+    var incoming:int=0
+    for shot:Dictionary in session.projectiles:
+        if bool(shot.get("hostile",false)):incoming+=1
+    if incoming>0:highest=3
+    threat.text="敵反応 %d　敵弾 %d　危険度 %s" % [nearby.size(),incoming,["安全","探知","射程内","警戒！"][highest]]
     threat.modulate=Color("ff8494") if highest>=3 else Color("ffdeb4") if highest==2 else Color("bce8f0")
     var active:Dictionary={}
     for item:Dictionary in nearby.slice(0,5):
