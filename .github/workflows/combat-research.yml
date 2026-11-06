@@ -8,6 +8,8 @@ on:
       - 'godot-foundation/research/combat/**/*.tres'
       - 'godot-foundation/tests/test_combat_research.gd'
       - 'godot-foundation/tests/test_combat_ui.gd'
+      - 'godot-foundation/tests/test_combat_journey.gd'
+      - 'godot-foundation/tests/test_combat_journey_ui.gd'
       - '.github/workflows/combat-research.yml'
   workflow_dispatch:
 permissions:
@@ -36,10 +38,11 @@ jobs:
         run: |
           mkdir -p godot-foundation/tests/.state
           set -o pipefail
-          for test in test_session test_ui test_combat_research; do
+          for test in test_session test_ui test_combat_research test_combat_journey; do
             godot --headless --path godot-foundation --script "res://tests/$test.gd" | tee "/tmp/$test.log"
           done
           godot --headless --path godot-foundation --script res://tests/test_combat_ui.gd -- --fixture | tee /tmp/test_combat_ui.log
+          godot --headless --path godot-foundation --script res://tests/test_combat_journey_ui.gd -- --journey | tee /tmp/test_combat_journey_ui.log
       - name: Install CJK fonts for screenshot evidence
         run: |
           sudo apt-get update -qq
@@ -49,6 +52,10 @@ jobs:
         shell: bash
         run: |
           xvfb-run -a godot --path godot-foundation --rendering-method gl_compatibility --script res://research/combat/capture_fixture.gd -- --fixture | tee /tmp/capture.log
+      - name: Capture natural encounter at 960x540
+        shell: bash
+        run: |
+          xvfb-run -a godot --path godot-foundation --rendering-method gl_compatibility --resolution 960x540 --script res://research/combat/capture_journey.gd -- --journey | tee /tmp/capture_journey.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -63,7 +70,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p godot-foundation/research/combat/evidence
-          cp /tmp/import.log /tmp/test_session.log /tmp/test_ui.log /tmp/test_combat_research.log /tmp/test_combat_ui.log /tmp/capture.log godot-foundation/research/combat/evidence/
+          cp /tmp/import.log /tmp/test_session.log /tmp/test_ui.log /tmp/test_combat_research.log /tmp/test_combat_ui.log /tmp/test_combat_journey.log /tmp/test_combat_journey_ui.log /tmp/capture.log /tmp/capture_journey.log godot-foundation/research/combat/evidence/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add godot-foundation/research/combat/evidence/

@@ -11,13 +11,18 @@ var cards:Dictionary={}
 var previous_hp:float=-1.0
 var elapsed:float=0.0
 var feedback_tween:Tween
+var side:PanelContainer
+var details:ScrollContainer
+var separator:HSeparator
+var toggle_button:Button
+var collapsed:bool=false
 
 func _ready()->void:
     layer=15
     var layer_root:=Control.new();add_child(layer_root)
     layer_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
     layer_root.mouse_filter=Control.MOUSE_FILTER_IGNORE
-    var side:=PanelContainer.new();layer_root.add_child(side)
+    side=PanelContainer.new();layer_root.add_child(side)
     side.anchor_left=0.0;side.anchor_right=0.0
     side.offset_left=14;side.offset_right=360;side.offset_top=135;side.offset_bottom=582
     var style:=StyleBoxFlat.new();style.bg_color=Color(0.025,0.08,0.13,0.9)
@@ -26,17 +31,37 @@ func _ready()->void:
     side.add_theme_stylebox_override("panel",style)
     side.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var stack:=VBoxContainer.new();side.add_child(stack)
-    title=Label.new();title.text="戦闘観測 | Combat Lab";title.add_theme_font_size_override("font_size",19);stack.add_child(title)
+    var heading:=HBoxContainer.new();stack.add_child(heading)
+    title=Label.new();title.text="戦闘観測 | Combat Lab";title.add_theme_font_size_override("font_size",19);title.size_flags_horizontal=Control.SIZE_EXPAND_FILL;heading.add_child(title)
+    toggle_button=Button.new();toggle_button.text="詳細 −";toggle_button.pressed.connect(func():set_collapsed(not collapsed));heading.add_child(toggle_button)
     weapon=Label.new();weapon.add_theme_font_size_override("font_size",14);stack.add_child(weapon)
     threat=Label.new();threat.add_theme_font_size_override("font_size",15);stack.add_child(threat)
-    stack.add_child(HSeparator.new())
-    entries=VBoxContainer.new();stack.add_child(entries)
+    separator=HSeparator.new();stack.add_child(separator)
+    details=ScrollContainer.new();details.size_flags_vertical=Control.SIZE_EXPAND_FILL;details.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;stack.add_child(details)
+    entries=VBoxContainer.new();details.add_child(entries)
     feedback=Label.new();feedback.position=Vector2(375,115)
     feedback.add_theme_font_size_override("font_size",28)
     feedback.modulate=Color("ff8194");layer_root.add_child(feedback)
+    set_collapsed(false)
+
+func panel_bottom_for_height(viewport_height:float)->float:
+    if collapsed:return side.offset_top+142.0
+    return minf(side.offset_top+440.0,maxf(side.offset_top+190.0,viewport_height-175.0))
+
+func _layout_panel()->void:
+    if side==null:return
+    side.offset_bottom=panel_bottom_for_height(get_viewport().get_visible_rect().size.y)
+
+func set_collapsed(value:bool)->void:
+    collapsed=value
+    if details!=null:details.visible=not collapsed
+    if separator!=null:separator.visible=not collapsed
+    if toggle_button!=null:toggle_button.text="詳細 ＋" if collapsed else "詳細 −"
+    _layout_panel()
 
 func _process(dt:float)->void:
     if session==null:return
+    _layout_panel()
     elapsed+=dt
     if previous_hp>=0.0 and session.hp<previous_hp:
         _damage_feedback(previous_hp-session.hp)

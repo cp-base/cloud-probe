@@ -9,14 +9,21 @@ func _ready()->void:
     game=ResearchSession.new()
     var args:PackedStringArray=OS.get_cmdline_user_args()
     var fixture:bool="--fixture" in args
-    var loaded:String="fixture" if fixture else game.load_game()
+    var journey:bool="--journey" in args
+    var loaded:String="fixture" if fixture else ("journey" if journey else game.load_game())
     if fixture:
         _start_fixture()
+    elif journey:
+        game.new_campaign(71127)
+        game.depart("base")
+        game.allow_save=false
+        game.experimental_patterns="--patterns" in args
     else:
         game.experimental_patterns="--patterns" in args
     _build_world();_build_ui();_sync_markers();_visuals(0.0)
     pattern_toggle.text="敵行動の実験：ON" if game.experimental_patterns else "敵行動の実験：OFF"
     combat_hud=CombatHUD.new();combat_hud.session=game;add_child(combat_hud)
+    combat_hud.set_collapsed(not fixture)
     if not fixture:
         if loaded=="error":_settings()
         elif game.phase=="docked":_facility(game.current_facility)
