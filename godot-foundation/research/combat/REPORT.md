@@ -153,6 +153,60 @@ This is deliberately a **minimal** three-phase navigation state machine with no 
 
 A later experiment could add an automatic *battle-end policy* (continue / retreat / reserve fuel) and test navigation between waypoints rather than headings. Need test UI at different window sizes before considering integration. Crucially **no changes were made to `main`, existing Foundation `core/`/`ui/` or shared decision documents**.
 
+
+## Fourth pass: three independent movement policies, automatic weapons always ON (2026-11-07)
+
+### User intent and scope
+
+Player feedback from the opt-in automatic battle test: an unattended automatic encounter that ends in defeat can be an enjoyable exploration outcome; avoiding fights by passing through enemies can also be the right strategy. The central request is **movement choice**, not an attack-enable toggle. For this research, the existing Foundation weapon system remains entirely automatic in all three modes:
+
+| Choice shown in Combat Lab | Movement control | What happens to automatic weapons |
+| --- | --- | --- |
+| **移動：手動航行** / manual | Direct input controls forward, reverse and heading | Existing automatic ranged/melee attacks still fire |
+| **移動：自動航行** / cruise | Existing straight auto-forward, no enemy-specific pursuit | Same automatic attacks against foes in range; enemies may fight back |
+| **移動：自動戦闘** / battle | Auto-forward plus the earlier 78-unit enemy acquisition, facing/weapon-range pursuit, and resume-heading after victory | Same automatic attacks; no new damage or target-attack logic |
+
+These are **three movement policies, not three weapon modes**. They are an explicit selector in the research scene; the original dual `自動前進` and `自動交戦` controls are not shown in this isolated scene. The inherited Foundation auto-forward button and game control remain intact in source, with the new selector synchronizing their existing state. This is a prototype, not a main-branch rule.
+
+### Code and execution
+
+- `combat_main.gd`: exposes one OptionButton selector `manual/cruise/battle`. Mode switching updates existing `auto_forward` and optional `auto_battle_enabled` inputs. Reverse/stop/modal interruption resets the research selection to manual. Temporary manual steering overrides combat pursuit while the key is held; it does not alter firing.
+- `combat_session.gd`, `autopilot.gd` and the original Foundation `_attack()` **need no edits** for this pass. In particular, no false requirement to add attack ON/OFF, projectile suppression, attack cooldown changes or new damage formulas.
+- The selector and optional enemy-pattern experiment are stacked at x=380, y=146 and y=195, away from the inherited top buttons, combat readout and the 838-wide compact minimap; layout was inspected in actual Godot Xvfb screenshot.
+- `--journey --auto` opens automatic cruise in the standard deterministic seed without save; `--journey --autobattle` starts automatic combat movement. Normal Combat Lab starts manual with automatic weapons retained.
+- The automatic-combat controller itself still has **three internal phases** `explore/battle/resume` while the **player-facing selector** has `manual/cruise/battle`. These should not be conflated.
+
+### Measured validation
+
+[Dedicated GitHub Actions #42351783428](https://github.com/cp-base/cloud-probe/actions/runs/42351783428) **succeeded** on Godot 4.7.2 after UI clearance adjustment. The earlier first implementation CI [#42351587934](https://github.com/cp-base/cloud-probe/actions/runs/42351587934) also passed, but its screenshot showed controls overlapping the inherited top row; fixed in follow-up.
+
+| Test | Checks | Result |
+| --- | ---: | --- |
+| Foundation original session | 42 | PASS |
+| Foundation original UI | 6 | PASS |
+| Previous combat logic | 19 | PASS |
+| Previous natural encounter journey | 84 | PASS |
+| Previous automatic encounter A/B | 36 | PASS |
+| **Three-mode attack/movement logic**, `test_combat_movement_modes.gd` | **13** | **PASS** |
+| Combat fixture UI | 8 | PASS |
+| Natural journey UI | 9 | PASS |
+| **Three-mode selector UI**, `test_combat_autopilot_ui.gd` | **19** | **PASS** |
+| **Total** | **236** | **PASS** |
+
+The new attack test built an ordinary Foundation Session with an enemy 27 units ahead, ran physics through `tick()` and confirmed **one ordinary ranged shot in each of manual, cruise and battle**. Capturing an offset enemy changed heading only in battle mode; ordinary cruise did not acquire a target. The UI test switched manual → cruise → battle, entered a natural generated battle, switched battle → cruise (target released), switched cruise → battle (target reacquired), then switched battle → manual and also tested the inherited stop/reset path. The no-save protection remained effective.
+
+The previous natural-encounter A/B with four starter enemies remains relevant but **does not imply safety or universal win rates**: straight cruise defeated fast/melee while artillery was passed; battle pursuit defeated fast/melee/artillery and returned to travel after victory, but an unupgraded player still lost to heavy. It is intentional that **automatic combat may lose**.
+
+Godot import and the GUI fixture, journey (actual 838×540), expanded HUD and 1180×760 battle screenshots all succeeded. The `evidence/autobattle.png` file in this branch shows the new selector visibly separate from other controls. The ephemeral Linux GUI runner had no physical audio device; it used Godot's dummy audio backend without affecting visual/test results. This is automated GUI inspection, **not** a claim of human playtesting.
+
+### Remaining questions (not new rules)
+
+- In this prototype, selecting cruise **during** an ongoing battle cancels target tracking immediately and continues from the **current** yaw. A normal successful battle still restores pre-fight heading. Whether manual cancellation should restore a saved route is a separate design decision.
+- Manual steering while auto-forward is enabled temporarily overrides target pursuit rather than fully selecting manual; back/stop selects manual. Further usability feedback can guide whether left/right steering should also cancel cruise.
+- Target acquisition is a short-radius single-target heuristic, not a route/path planner. Encountering multiple enemies, weak equipment, fuel constraints, and defeat still have the prior trial's limitations.
+- Foundation's existing automatic weapon firing picks a nearby target whenever it enters weapon range, regardless of chosen movement mode. **Auto cruise is not invulnerability, pacifism, or guaranteed bypass.**
+- No new forced retreat, safety logic, or compulsory automatic combat behavior was introduced; no decision was written to shared governance documents.
+
 ## How to add enemy and weapon types later
 
 1. For a **new enemy**, add a `ProbeEnemyProfile` `.tres` to `data/`, register it in `data/catalog.gd`, add a type selection policy to `core/world.gd`, then verify `Session._enemies`, visuals/shapes and tests. Currently `world.gd` chooses among exactly 4 entries with `randi_range(0,3)`: simply adding a fifth Resource would not spawn it without changing selection logic. New movement patterns should be considered separately from combat stats.

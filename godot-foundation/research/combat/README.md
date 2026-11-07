@@ -44,6 +44,22 @@ The research report is [REPORT.md](REPORT.md). Real 1180×760 fixture screenshot
 
 Latest verification: [Actions #42295474200](https://github.com/cp-base/cloud-probe/actions/runs/42295474200) — 168/168 successful checks incl. 8 natural encounter trials; heavy first shot 21.05s OFF vs 22.15s ON. See [REPORT.md](REPORT.md#second-pass-naturally-generated-encounter-and-live-combat-timing-2026-11-07). Experimental transient windup flags are cleared on toggle-off/load. No main changes.
 
-### Third pass: opt-in automatic battle mode
+### Third pass (historical): opt-in automatic battle mode
 
 With regular auto-forward **自動前進** active, enable **自動交戦** to experiment with enemy acquisition, automatic facing/range control, and returning to the original travel heading. Both switches must be active to engage. Manual steering can override the behavior. The option is **OFF by default**, does not modify existing Foundation rules, and is not a feature adoption. The auto navigation program is in `autopilot.gd`; the dedicated headless A/B comparison is `tests/test_combat_autopilot.gd`. The reproducible auto-start scene is `--journey --autobattle --auto` with saving disabled. CI [#42302688760](https://github.com/cp-base/cloud-probe/actions/runs/42302688760) passed **211 / 211 checks**, including four naturally generated enemy types compared with the toggle OFF and ON, and captured `evidence/autobattle.png`. Read [REPORT.md](REPORT.md) for numeric results and limitations.
+
+### Fourth pass: three movement choices, always-on weapon attacks (current prototype)
+
+The user-facing Combat Lab movement selector now offers **移動：手動航行 / 移動：自動航行 / 移動：自動戦闘**. **Weapons always attack automatically when a target enters ordinary Foundation range**, regardless of which movement policy is selected. Auto cruise does not chase enemies but may shoot while passing them; auto battle steers toward a target and resumes heading after victory; manual navigation delegates steering to the player. The former two-switch research UI is preserved as history above, not the present layout; the inherited auto-forward button is hidden only in the research scene and not modified in core files. Optional enemy pattern toggle remains independent.
+
+Latest verified CI: [#42351783428](https://github.com/cp-base/cloud-probe/actions/runs/42351783428), **236/236 Godot 4.7.2 checks PASS**, including **13** new movement/automatic-firing tests and **19** UI selector/interrupt tests, with real battle screenshot and a compact 540p screenshot. No merge into `main`.
+
+```sh
+godot --path . res://research/combat/CombatResearch.tscn -- --journey
+godot --path . res://research/combat/CombatResearch.tscn -- --journey --auto
+godot --path . res://research/combat/CombatResearch.tscn -- --journey --autobattle
+godot --headless --path . --script res://tests/test_combat_movement_modes.gd
+godot --headless --path . --script res://tests/test_combat_autopilot_ui.gd -- --journey
+```
+
+See [REPORT.md](REPORT.md#fourth-pass-three-independent-movement-policies-automatic-weapons-always-on-2026-11-07) for observed behavior, A/B comparison and open usability questions.
