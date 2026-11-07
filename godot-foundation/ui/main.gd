@@ -2,10 +2,16 @@ extends Node3D
 const Session=preload("res://core/session.gd")
 const Catalog=preload("res://data/catalog.gd")
 const LightShader=preload("res://visuals/light.gdshader")
+const SpaceSkyShader=preload("res://visuals/space_sky.gdshader")
 const MapView=preload("res://ui/map_view.gd")
 var game:RefCounted
 var camera:Camera3D
 var environment:Environment
+var comparison_sky:Sky
+var base_sky_material:ProceduralSkyMaterial
+var comparison_material:ShaderMaterial
+var comparison_mode:int=0
+var compare_button:Button
 var markers:Dictionary={}
 var shots:Dictionary={}
 var effect_nodes:Array[MeshInstance3D]=[]
@@ -52,6 +58,7 @@ func _build_world()->void:
     sky_material.ground_energy_multiplier=0.6
     sky_material.sky_curve=0.5;sky_material.ground_curve=0.5
     var sky:=Sky.new();sky.sky_material=sky_material;environment.sky=sky
+    comparison_sky=sky;base_sky_material=sky_material
     environment.tonemap_mode=Environment.TONE_MAPPER_FILMIC
     environment.glow_intensity=0.16;environment.glow_hdr_threshold=0.9
     var world_environment:=WorldEnvironment.new();world_environment.environment=environment;add_child(world_environment)
@@ -114,6 +121,7 @@ func _build_ui()->void:
     row.add_child(_button("保存",_save,95))
     pause_button=_button("一時停止",_toggle_pause);row.add_child(pause_button)
     row.add_child(_button("設定",_settings,95))
+    compare_button=_button("空間 1: ほぼ空",_next_space_mode,175);row.add_child(compare_button)
     var reticle:=_label("＋",22);root.add_child(reticle);reticle.set_anchors_and_offsets_preset(Control.PRESET_CENTER);reticle.position-=Vector2(10,15);reticle.modulate=Color(0.7,0.85,0.9,0.35)
     guide=_label("",14);root.add_child(guide);guide.modulate=Color("b3e9eb")
     for i in range(5):
@@ -410,7 +418,27 @@ func _unhandled_input(event:InputEvent)->void:
                 KEY_SPACE:_toggle_pause()
                 KEY_E:_access()
                 KEY_M:_map()
+                KEY_1:_set_space_mode(0)
+                KEY_2:_set_space_mode(1)
+                KEY_3:_set_space_mode(2)
     if event is InputEventMouseMotion and event.button_mask&MOUSE_BUTTON_MASK_RIGHT and modal==null and not game.paused:game.yaw-=event.relative.x*0.003
+
+func _next_space_mode()->void:
+    _set_space_mode((comparison_mode+1)%3)
+
+func _set_space_mode(index:int)->void:
+    comparison_mode=clampi(index,0,2)
+    if comparison_sky==null:return
+    if comparison_mode==0:
+        comparison_sky.sky_material=base_sky_material
+    else:
+        if comparison_material==null:
+            comparison_material=ShaderMaterial.new()
+            comparison_material.shader=SpaceSkyShader
+        comparison_material.set_shader_parameter("variant",comparison_mode)
+        comparison_sky.sky_material=comparison_material
+    if compare_button!=null:
+        compare_button.text=["空間 1: ほぼ空","空間 2: 薄い情報","空間 3: 遠景構造"][comparison_mode]
 
 func _notification(what:int)->void:
     if what==NOTIFICATION_WM_WINDOW_FOCUS_OUT:
