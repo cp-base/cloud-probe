@@ -1,0 +1,42 @@
+name: Weapon Targeting Research (isolated branch)
+on:
+  push:
+    branches: [research/weapon-targeting]
+    paths:
+      - 'godot-foundation/research/weapon-targeting/**'
+      - 'godot-foundation/tests/test_weapon_targeting.gd'
+      - '.github/workflows/weapon-targeting-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install official Godot 4.7.2
+        shell: bash
+        run: |
+          curl -fL --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
+          echo /tmp/godot >> "$GITHUB_PATH"
+          ln -s /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 /tmp/godot/godot
+      - name: Import actual Foundation
+        run: |
+          godot --headless --editor --path godot-foundation --import --quit 2>&1 | tee /tmp/import.log
+          ! grep -E 'SCRIPT ERROR|Parse Error|ERROR:.*Failed loading' /tmp/import.log
+      - name: Weapon modes and Foundation regression
+        shell: bash
+        run: |
+          mkdir -p godot-foundation/tests/.state
+          set -o pipefail
+          godot --headless --path godot-foundation --script res://tests/test_weapon_targeting.gd 2>&1 | tee /tmp/targeting.log
+          godot --headless --path godot-foundation --script res://tests/test_session.gd 2>&1 | tee /tmp/session.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weapon-targeting-logs
+          path: /tmp/*.log
+          if-no-files-found: warn
