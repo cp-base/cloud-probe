@@ -65,7 +65,7 @@ func run()->void:
         spawn(s,"A",Vector2(0,-25))
         spawn(s,"B",Vector2(23,-15))
         spawn(s,"C",Vector2(-23,-15))
-        spawn(s,"D",Vector2(0,-39))
+        spawn(s,"D",Vector2(0,-40))
         s._attack(0.01)
         resolve(s)
         var expected:int=1 if mode=="area" else 3
@@ -73,6 +73,16 @@ func run()->void:
         for id in ["A","B","C","D"]:
             if health(s,id)<100.0:hits+=1
         check(hits==expected,mode+": spread-out encounter count")
+    # Radius boundary is inclusive; a point even slightly outside must not be affected.
+    var edge:RefCounted=fixture()
+    edge.prototype_mode="area"
+    spawn(edge,"A",Vector2(0,-25))
+    spawn(edge,"B",Vector2(14,-25))
+    spawn(edge,"C",Vector2(14.1,-25))
+    edge._attack(0.01)
+    resolve(edge)
+    check(health(edge,"B")<100.0,"splash includes exact radius boundary")
+    check(is_equal_approx(health(edge,"C"),100.0),"splash excludes outside radius")
     # Keep melee-first behavior; new modes must not change close-combat priority.
     var melee:RefCounted=fixture()
     melee.prototype_mode="multi"
