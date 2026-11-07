@@ -3,12 +3,22 @@ Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションから出発。
-COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false
-PASS AUTO_UI UI auto-battle toggle defaults OFF
-PASS AUTO_UI UI enables optional auto battle
-PASS AUTO_UI UI disables auto battle
-PASS AUTO_UI autobattle only engages during auto-forward
-PASS AUTO_UI real UI auto-forward requests battle controller
-PASS AUTO_UI stop auto-forward releases battle controller
-PASS AUTO_UI journey mode still blocks save overwrites
-AUTO_UI SUMMARY checks=7 failures=0
+COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false move=manual
+PASS MODE_UI one explicit three-choice movement selector
+PASS MODE_UI startup defaults to manual navigation
+PASS MODE_UI old dual-toggle UI hidden without changing Foundation code
+PASS MODE_UI natural journey no-save fixture
+PASS MODE_UI choice cruise enables auto-forward without target pursuit
+PASS MODE_UI selector and inherited controls stay synchronized in cruise
+PASS MODE_UI cruise uses ordinary movement without enemy autopilot
+PASS MODE_UI choice battle enables auto-forward plus target pursuit
+PASS MODE_UI selector shows battle
+PASS MODE_UI real naturally generated enemy enters automatic combat
+PASS MODE_UI switching battle to cruise immediately releases target
+PASS MODE_UI cruise does not re-acquire nearby target
+PASS MODE_UI switching cruise to battle immediately re-acquires nearby enemy
+PASS MODE_UI switching battle to manual cancels target and automatic movement
+PASS MODE_UI selector and inherited controls stay synchronized in manual
+PASS MODE_UI reverse/stop common handler returns selector to manual
+PASS MODE_UI movement-mode study cannot overwrite normal save
+MODE_UI SUMMARY checks=17 failures=0

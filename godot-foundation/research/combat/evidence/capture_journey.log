@@ -20,6 +20,6 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションから出発。
-COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false
+COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false move=manual
 JOURNEY_CAPTURE result=0 size=838x540 steps=325 closest=52.88 enemy=fast enemy_hp=30 mode= path=res://research/combat/evidence/journey_540p.png
 JOURNEY_DETAIL_CAPTURE result=0 path=res://research/combat/evidence/journey_detail_540p.png

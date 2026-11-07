@@ -20,6 +20,6 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションで準備中。
 SESSION 起点ステーションから出発。
-COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false
+COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false move=battle
 SESSION 到達記録更新：100。探索成果を獲得。
 AUTO_CAPTURE result=0 size=1180x760 entered=true mode=交戦 closest=36.43 file=res://research/combat/evidence/autobattle.png
