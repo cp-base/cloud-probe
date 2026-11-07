@@ -12,6 +12,7 @@ on:
       - 'godot-foundation/tests/test_combat_journey_ui.gd'
       - 'godot-foundation/tests/test_combat_autopilot.gd'
       - 'godot-foundation/tests/test_combat_autopilot_ui.gd'
+      - 'godot-foundation/tests/test_combat_movement_modes.gd'
       - '.github/workflows/combat-research.yml'
   workflow_dispatch:
 permissions:
@@ -43,7 +44,7 @@ jobs:
         run: |
           mkdir -p godot-foundation/tests/.state
           set -o pipefail
-          for test in test_session test_ui test_combat_research test_combat_journey test_combat_autopilot; do
+          for test in test_session test_ui test_combat_research test_combat_journey test_combat_autopilot test_combat_movement_modes; do
             godot --headless --path godot-foundation --script "res://tests/$test.gd" | tee "/tmp/$test.log"
           done
           godot --headless --path godot-foundation --script res://tests/test_combat_ui.gd -- --fixture | tee /tmp/test_combat_ui.log

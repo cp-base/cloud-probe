@@ -3,7 +3,8 @@ const ResearchSession=preload("res://research/combat/combat_session.gd")
 const CombatHUD=preload("res://research/combat/combat_hud.gd")
 var combat_hud:CanvasLayer
 var pattern_toggle:Button
-var auto_battle_toggle:Button
+var movement_select:OptionButton
+var movement_mode:String="manual"
 
 func _ready()->void:
     get_tree().auto_accept_quit=false
@@ -25,35 +26,56 @@ func _ready()->void:
     pattern_toggle.text="敵行動の実験：ON" if game.experimental_patterns else "敵行動の実験：OFF"
     combat_hud=CombatHUD.new();combat_hud.session=game;add_child(combat_hud)
     combat_hud.set_collapsed(not fixture)
-    if journey and "--auto" in args:
-        auto_forward=true;auto_button.set_pressed_no_signal(true)
-    if "--autobattle" in args:
-        game.set_auto_battle_enabled(true)
-        auto_battle_toggle.text="自動交戦：ON"
+    _set_movement_mode("battle" if "--autobattle" in args else ("cruise" if "--auto" in args else "manual"))
     if not fixture:
         if loaded=="error":_settings()
         elif game.phase=="docked":_facility(game.current_facility)
-    print("COMBAT_RESEARCH_READY phase=%s fixture=%s patterns=%s" % [game.phase,fixture,game.experimental_patterns])
+    print("COMBAT_RESEARCH_READY phase=%s fixture=%s patterns=%s move=%s" % [game.phase,fixture,game.experimental_patterns,movement_mode])
 
 func _build_ui()->void:
     super._build_ui()
     pattern_toggle=_button("敵行動の実験：OFF",_toggle_patterns,196)
     pattern_toggle.position=Vector2(380,112)
     root.add_child(pattern_toggle)
-    auto_battle_toggle=_button("自動交戦：OFF",_toggle_autobattle,170)
-    auto_battle_toggle.position=Vector2(595,112)
-    root.add_child(auto_battle_toggle)
+    # The original Foundation auto-forward button stays available to inherited code,
+    # but the research UI has one explicit three-way movement selector instead.
+    auto_button.hide()
+    movement_select=OptionButton.new()
+    movement_select.position=Vector2(595,112)
+    movement_select.custom_minimum_size=Vector2(220,40)
+    movement_select.size=Vector2(220,40)
+    movement_select.focus_mode=Control.FOCUS_NONE
+    movement_select.add_item("移動：手動航行",0)
+    movement_select.add_item("移動：自動航行",1)
+    movement_select.add_item("移動：自動戦闘",2)
+    movement_select.select(0)
+    root.add_child(movement_select)
+    movement_select.item_selected.connect(_select_movement_mode)
 
 func _physics_process(dt:float)->void:
     if game!=null:
         var steering:bool=bool(held["left"]) or bool(held["right"]) or Input.is_physical_key_pressed(KEY_A) or Input.is_physical_key_pressed(KEY_D) or Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_RIGHT)
         var reverse:bool=bool(held["back"]) or Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
-        game.auto_explore_requested=auto_forward and modal==null and not steering and not reverse
+        game.auto_explore_requested=movement_mode!="manual" and auto_forward and modal==null and not game.paused and not steering and not reverse
     super._physics_process(dt)
 
-func _toggle_autobattle()->void:
-    game.set_auto_battle_enabled(not game.auto_battle_enabled)
-    auto_battle_toggle.text="自動交戦：ON" if game.auto_battle_enabled else "自動交戦：OFF"
+func _select_movement_mode(index:int)->void:
+    _set_movement_mode(["manual","cruise","battle"][index])
+
+func _set_movement_mode(value:String)->void:
+    if value not in ["manual","cruise","battle"]:return
+    movement_mode=value
+    auto_forward=value!="manual"
+    if auto_button!=null:auto_button.set_pressed_no_signal(auto_forward)
+    if game!=null:
+        game.set_auto_battle_enabled(value=="battle")
+        game.auto_explore_requested=auto_forward and game.phase=="travel" and not game.paused and modal==null
+    if movement_select!=null:
+        movement_select.select(["manual","cruise","battle"].find(value))
+
+func _stop_auto()->void:
+    super._stop_auto()
+    if movement_mode!="manual":_set_movement_mode("manual")
 
 func _toggle_patterns()->void:
     game.set_patterns_enabled(not game.experimental_patterns)
