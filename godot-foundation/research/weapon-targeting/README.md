@@ -28,3 +28,7 @@ Run the existing `test_session.gd` regression separately. The tests construct de
 Same 4-target cluster: baseline 1 hit, splash 3 hits, multi 3 hits. Spread targets: splash 1 hit, multi 3 hits. No optimization required. Existing shared firing cooldown unchanged. Separate tests cover melee-first selection, range, dead targets, no repeated firing during cooldown, and projectile cleanup.
 
 Current implementation limitation: the experimental subclass is test-accessible, not connected to `Main.tscn` or a player equipment menu. Multi-shot fires 3 full-strength shots on one cooldown (balance not studied); splash explosion centered at the homing target's current position, not an independently simulated impact obstacle. This is a **mechanical feasibility study**, not a merged feature.
+
+## Verified outcome
+
+Godot 4.7.2 isolated CI [#42369253194](https://github.com/cp-base/cloud-probe/actions/runs/42369253194): **24/24 new targeting checks and 42/42 original Foundation checks PASS**. See [REPORT.md](REPORT.md) for results, initial radius-boundary fixture issue, and limitations.
