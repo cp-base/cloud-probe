@@ -3,6 +3,7 @@ const Session=preload("res://core/session.gd")
 const Catalog=preload("res://data/catalog.gd")
 const LightShader=preload("res://visuals/light.gdshader")
 const SpaceSkyShader=preload("res://visuals/space_sky.gdshader")
+const GroundShader=preload("res://visuals/data_ground.gdshader")
 const MapView=preload("res://ui/map_view.gd")
 var game:RefCounted
 var camera:Camera3D
@@ -11,6 +12,11 @@ var comparison_sky:Sky
 var base_sky_material:ProceduralSkyMaterial
 var comparison_material:ShaderMaterial
 var comparison_mode:int=0
+var space_base_index:int=0
+var space_noise:int=1
+var space_flow:int=1
+var background_ground:MeshInstance3D
+var background_ground_material:ShaderMaterial
 var compare_button:Button
 var markers:Dictionary={}
 var shots:Dictionary={}
@@ -63,6 +69,44 @@ func _build_world()->void:
     environment.glow_intensity=0.16;environment.glow_hdr_threshold=0.9
     var world_environment:=WorldEnvironment.new();world_environment.environment=environment;add_child(world_environment)
     camera=Camera3D.new();camera.fov=72;camera.far=700;add_child(camera);camera.current=true
+    _build_ground_effect()
+    _set_background_palette(0)
+
+func _build_ground_effect()->void:
+    # Transparent visual layer below a 0-height floating camera: no collision or physical ground.
+    background_ground=MeshInstance3D.new()
+    var plane:=PlaneMesh.new()
+    plane.size=Vector2(1300.0,1300.0)
+    background_ground.mesh=plane
+    background_ground.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+    background_ground_material=ShaderMaterial.new()
+    background_ground_material.shader=GroundShader
+    background_ground.material_override=background_ground_material
+    add_child(background_ground)
+    _set_background_layers()
+
+func _set_background_layers()->void:
+    if background_ground==null:return
+    background_ground.visible=space_noise>0 or space_flow>0
+    background_ground_material.set_shader_parameter("noise_level",float(space_noise))
+    background_ground_material.set_shader_parameter("flow_level",float(space_flow))
+
+func _set_background_palette(index:int)->void:
+    space_base_index=clampi(index,0,2)
+    var top_colors:Array[Color]=[Color("010205"),Color("040b1a"),Color("07141f")]
+    var horizon_colors:Array[Color]=[Color("03070c"),Color("0a1628"),Color("102731")]
+    var ground_colors:Array[Color]=[Color("04080c"),Color("080f20"),Color("07141f")]
+    var tints:Array[Color]=[Color("62d7f7"),Color("5c9ef4"),Color("4fc7c9")]
+    if base_sky_material!=null:
+        base_sky_material.sky_top_color=top_colors[space_base_index]
+        base_sky_material.sky_horizon_color=horizon_colors[space_base_index]
+        base_sky_material.ground_bottom_color=ground_colors[space_base_index]
+        base_sky_material.ground_horizon_color=horizon_colors[space_base_index]
+    if comparison_material!=null:
+        comparison_material.set_shader_parameter("zenith_color",top_colors[space_base_index])
+        comparison_material.set_shader_parameter("horizon_color",horizon_colors[space_base_index])
+    if background_ground_material!=null:
+        background_ground_material.set_shader_parameter("effect_tint",tints[space_base_index])
 
 func _object_height(object:Dictionary)->float:
     var phase:float=object.get("phase",0.0)
@@ -341,6 +385,8 @@ func _physics_process(dt:float)->void:
 
 func _visuals(dt:float)->void:
     camera.position=Vector3(game.position.x,0.0,game.position.y);camera.rotation=Vector3(0,game.yaw,0)
+    if background_ground!=null:
+        background_ground.position=Vector3(game.position.x,-34.0,game.position.y)
     environment.glow_enabled=bool(game.campaign.settings.get("glow",false))
     for key:String in markers:
         var node:MeshInstance3D=markers[key]
@@ -421,6 +467,15 @@ func _unhandled_input(event:InputEvent)->void:
                 KEY_1:_set_space_mode(0)
                 KEY_2:_set_space_mode(1)
                 KEY_3:_set_space_mode(2)
+                KEY_4:_set_background_palette(0)
+                KEY_5:_set_background_palette(1)
+                KEY_6:_set_background_palette(2)
+                KEY_N:
+                    space_noise=(space_noise+1)%3
+                    _set_background_layers()
+                KEY_F:
+                    space_flow=(space_flow+1)%3
+                    _set_background_layers()
     if event is InputEventMouseMotion and event.button_mask&MOUSE_BUTTON_MASK_RIGHT and modal==null and not game.paused:game.yaw-=event.relative.x*0.003
 
 func _next_space_mode()->void:
@@ -437,6 +492,7 @@ func _set_space_mode(index:int)->void:
             comparison_material.shader=SpaceSkyShader
         comparison_material.set_shader_parameter("variant",comparison_mode)
         comparison_sky.sky_material=comparison_material
+        _set_background_palette(space_base_index)
     if compare_button!=null:
         compare_button.text=["空間 1: ほぼ空","空間 2: 薄い情報","空間 3: 遠景構造"][comparison_mode]
 
