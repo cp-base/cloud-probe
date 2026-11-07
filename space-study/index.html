@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="theme-color" content="#03070d" />
+<title>CLOUD / PROBE | 背景比較模型 v0.3</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#d9edf0;background:#02060a}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+#view{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.soft-edge{pointer-events:none;position:fixed;inset:0;background:linear-gradient(180deg,rgba(1,4,9,.3),transparent 25%,transparent 78%,rgba(1,4,9,.52))}
+.header{position:fixed;z-index:4;top:max(12px,env(safe-area-inset-top));left:16px;right:16px;pointer-events:none;display:flex;align-items:start;justify-content:space-between;gap:10px}
+h1{font-weight:550;letter-spacing:.06em;font-size:16px;margin:0}.subtitle{font-size:10px;color:#7eabb8;letter-spacing:.11em;margin:3px 0 0}.status{text-align:right;font-size:11px;color:#8daeb7;line-height:1.5}.status strong{display:block;font-size:12px;font-weight:500;color:#c7eaf0}
+.switcher{position:fixed;z-index:8;top:70px;left:15px;max-width:min(340px,calc(100vw - 30px));border:1px solid #365560;background:rgba(5,20,29,.92);border-radius:12px;box-shadow:0 14px 30px #0005;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);overflow:hidden}
+summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;min-width:150px;padding:10px 14px;list-style:none;font-size:13px;color:#d8f2f5;touch-action:manipulation}summary::-webkit-details-marker{display:none}summary:after{content:'▾';font-size:12px;color:#83b0ba}.switcher[open] summary{border-bottom:1px solid #304956}.switcher[open] summary:after{content:'▴'}
+.settings-inner{padding:12px;display:grid;gap:10px;max-height:min(60vh,485px);overflow-y:auto}.setting-name{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:#9bb9bf;margin-bottom:4px}.choice-row{display:flex;gap:5px;flex-wrap:wrap}
+button{appearance:none;border:1px solid rgba(102,153,166,.43);color:#b9d7dd;background:rgba(11,39,50,.8);font:inherit;border-radius:7px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}button:focus-visible,summary:focus-visible{outline:2px solid #a4e3ef;outline-offset:2px}
+.choice-row button{font-size:12px;padding:6px 9px;flex:1 0 auto;white-space:nowrap;min-height:34px}button[aria-pressed=true]{color:#e8feff;border-color:#8fd5e3;background:rgba(47,107,122,.71);box-shadow:inset 0 0 0 1px rgba(139,209,224,.18)}
+.hint{font-size:10px;line-height:1.6;color:#83a1ac;padding:1px 2px}
+.readout{position:fixed;bottom:calc(112px + env(safe-area-inset-bottom));left:15px;font-size:11px;line-height:1.7;color:#a0c4cc;text-shadow:0 1px 4px #000b;z-index:2;pointer-events:none}
+.readout b{color:#dcf4f4;font-weight:500}
+.nav{position:fixed;z-index:5;bottom:max(12px,env(safe-area-inset-bottom));left:15px;right:15px;display:flex;justify-content:space-between;align-items:end;gap:14px;pointer-events:none}
+.pad,.aux{display:flex;gap:8px;pointer-events:auto}.pad button,.aux button{min-width:64px;min-height:45px;padding:8px 11px;font-size:12px;line-height:1.15;background:rgba(5,23,32,.82);border-radius:10px}.pad button.pressed{background:rgba(42,101,120,.88);border-color:#87d0df}.aux button{min-width:72px}.pad button small{display:block;font-size:10px;color:#88b0ba}.overlay-cross{position:fixed;left:50%;top:51%;width:12px;height:12px;transform:translate(-50%,-50%);z-index:1;pointer-events:none}.overlay-cross:before,.overlay-cross:after{content:'';position:absolute;background:rgba(153,206,215,.4)}.overlay-cross:before{width:12px;height:1px;top:6px;left:0}.overlay-cross:after{height:12px;width:1px;top:0;left:6px}
+@media(max-width:600px){
+ .header{top:max(8px,env(safe-area-inset-top));left:11px;right:11px}h1{font-size:13px}.subtitle{font-size:9px}.status{font-size:9px}.status strong{font-size:10px}
+ .switcher{top:57px;left:10px;max-width:min(330px,calc(100vw - 20px))}.settings-inner{gap:8px}.readout{left:11px;bottom:calc(135px + env(safe-area-inset-bottom));font-size:10px}
+ .nav{left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));align-items:end}
+ .pad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:42px 42px;gap:5px}.pad button{min-width:52px;min-height:42px;padding:4px;font-size:12px}
+ #left{grid-column:1;grid-row:2}#forward{grid-column:2;grid-row:1}#back{grid-column:2;grid-row:2}#right{grid-column:3;grid-row:2}
+ .pad button small{font-size:9px}.aux{flex-direction:column;gap:5px}.aux button{min-width:76px;min-height:39px;padding:6px 8px;font-size:11px}
+}
+@media(max-width:370px){.pad{grid-template-columns:repeat(3,46px)}.pad button{min-width:46px}.aux button{min-width:68px}.switcher{max-width:calc(100vw - 20px)}}
+</style>
+</head>
+<body>
+<canvas id="view" aria-label="一人称探索風の背景比較"></canvas><div class="soft-edge"></div><div class="overlay-cross"></div>
+<header class="header"><div><h1>CLOUD / PROBE <span style="opacity:.55">背景研究</span></h1><p class="subtitle">SPACE STUDY v0.3 / iPHONE TOUCH</p></div><div class="status"><span>BASE SPACE</span><strong id="currentMode">薄い情報空間</strong></div></header>
+<details class="switcher" id="settings"><summary>背景を切り替える</summary><div class="settings-inner">
+<div><div class="setting-name">背景密度</div><div class="choice-row" role="group" aria-label="背景密度"><button data-set="mode" data-value="0" type="button">ほぼ空</button><button data-set="mode" data-value="1" type="button">薄い情報</button><button data-set="mode" data-value="2" type="button">遠景残像</button></div></div>
+<div><div class="setting-name">ベース色</div><div class="choice-row" role="group" aria-label="ベース色"><button data-set="color" data-value="0" type="button">黒</button><button data-set="color" data-value="1" type="button">暗青</button><button data-set="color" data-value="2" type="button">青緑</button></div></div>
+<div><div class="setting-name">下方ノイズ</div><div class="choice-row" role="group" aria-label="下方ノイズ"><button data-set="noise" data-value="0" type="button">なし</button><button data-set="noise" data-value="1" type="button">弱</button><button data-set="noise" data-value="2" type="button">中</button></div></div>
+<div><div class="setting-name">下方の光の流れ</div><div class="choice-row" role="group" aria-label="下方の光の流れ"><button data-set="flow" data-value="0" type="button">なし</button><button data-set="flow" data-value="1" type="button">弱</button><button data-set="flow" data-value="2" type="button">中</button></div></div>
+<div class="hint">設定は独立。切り替えても現在位置は変わらない。画面を左右にスワイプして旋回もできるよ。</div>
+</div></details>
+<div class="readout" id="readout" aria-live="off">位置 <b>0, 0</b>　方位 <b>000°</b><div id="effectsText">黒 / ノイズ弱 / 光弱</div></div>
+<div class="nav"><div class="pad"><button id="left" type="button" aria-label="左旋回">↶<small>左旋回</small></button><button id="forward" type="button" aria-label="前進">↑<small>前進</small></button><button id="back" type="button" aria-label="後退">↓<small>後退</small></button><button id="right" type="button" aria-label="右旋回">↷<small>右旋回</small></button></div><div class="aux"><button id="auto" type="button" aria-pressed="false">▶ 自動前進</button><button id="reset" type="button">↺ 初期位置</button></div></div>
+<script>
+(()=>{'use strict';
+const canvas=document.getElementById('view'),ctx=canvas.getContext('2d',{alpha:false});
+const state={mode:1,color:0,noise:1,flow:1,auto:false,x:0,z:0,yaw:0};
+const names=['ほぼ空','薄い情報空間','遠景残像'];
+const paletteNames=['黒','暗青','青緑'];
+const density=['なし','弱','中'];
+const palettes=[
+ {top:'#010205',mid:'#03070c',bottom:'#04080c',tint:[98,215,247],fog:[49,91,111]},
+ {top:'#040b1a',mid:'#0a1628',bottom:'#080f20',tint:[93,160,244],fog:[62,91,148]},
+ {top:'#07141e',mid:'#091a22',bottom:'#07141a',tint:[79,199,201],fog:[59,110,120]}
+];
+let W=1000,H=700,DPR=1,time=0,last=0;
+const objects=[
+{x:-115,z:480,kind:'facility',amp:1}, {x:0,z:420,kind:'signal',amp:1},
+{x:140,z:510,kind:'enemy',amp:.8},{x:190,z:570,kind:'enemy',amp:.45},
+{x:-500,z:880,kind:'signal',amp:.85},{x:630,z:1010,kind:'facility',amp:.75},
+{x:-720,z:1500,kind:'enemy',amp:.7}
+];
+const held=new Set();
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const hash=(a,b)=>{const v=Math.sin(a*127.1+b*311.7)*43758.5453;return v-Math.floor(v)};
+const rgba=(rgb,a)=>`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(a,0,1)})`;
+function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0)}
+window.addEventListener('resize',resize);resize();
+function updateButtons(){for(const el of document.querySelectorAll('[data-set]')){el.setAttribute('aria-pressed',String(state[el.dataset.set]===Number(el.dataset.value)))}document.getElementById('currentMode').textContent=names[state.mode];document.getElementById('effectsText').textContent=`${paletteNames[state.color]} / ノイズ${density[state.noise]} / 光${density[state.flow]}`;for(const k of ['mode','color','noise','flow'])document.body.dataset[k]=state[k];document.getElementById('auto').setAttribute('aria-pressed',String(state.auto))}
+function setOption(k,v){state[k]=v;updateButtons()}
+for(const b of document.querySelectorAll('[data-set]'))b.addEventListener('click',()=>setOption(b.dataset.set,Number(b.dataset.value)));
+for(const key of ['forward','back','left','right']){const el=document.getElementById(key);el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);held.add(key);el.classList.add('pressed')});const end=()=>{held.delete(key);el.classList.remove('pressed')};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end)}
+const keyMap={KeyW:'forward',ArrowUp:'forward',KeyS:'back',ArrowDown:'back',KeyA:'left',ArrowLeft:'left',KeyD:'right',ArrowRight:'right'};
+window.addEventListener('keydown',e=>{if(keyMap[e.code]){held.add(keyMap[e.code]);e.preventDefault()}else if(/^Digit[123]$/.test(e.code)){setOption('mode',Number(e.code.slice(-1))-1)}else if(/^Digit[456]$/.test(e.code)){setOption('color',Number(e.code.slice(-1))-4)}else if(e.code==='KeyN'&&!e.repeat){setOption('noise',(state.noise+1)%3)}else if(e.code==='KeyF'&&!e.repeat){setOption('flow',(state.flow+1)%3)}else if(e.code==='Space'&&!e.repeat){state.auto=!state.auto;updateButtons();e.preventDefault()}});
+window.addEventListener('keyup',e=>{if(keyMap[e.code])held.delete(keyMap[e.code])});window.addEventListener('blur',()=>held.clear());
+document.getElementById('auto').addEventListener('click',()=>{state.auto=!state.auto;updateButtons()});
+document.getElementById('reset').addEventListener('click',()=>{state.x=0;state.z=0;state.yaw=0;state.auto=false;held.clear();updateButtons()});
+// Dragging the empty sky rotates the camera. This does not interfere with the on-screen buttons.
+let swipe=null;canvas.addEventListener('pointerdown',e=>{swipe={id:e.pointerId,x:e.clientX};try{canvas.setPointerCapture(e.pointerId)}catch(_){}});
+canvas.addEventListener('pointermove',e=>{if(swipe&&swipe.id===e.pointerId){state.yaw+=(e.clientX-swipe.x)*.0033;swipe.x=e.clientX}});
+for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>{swipe=null});
+function tick(dt){if(held.has('left'))state.yaw-=dt*.86;if(held.has('right'))state.yaw+=dt*.86;const dir=((held.has('forward')||state.auto)?1:0)-(held.has('back')?1:0);if(dir){state.x+=Math.sin(state.yaw)*dir*dt*75;state.z+=Math.cos(state.yaw)*dir*dt*75}}
+function focal(){return Math.min(W,H*1.5)/(2*Math.tan(Math.PI*36/180))}
+function project(x,z,y=0){const dx=x-state.x,dz=z-state.z,cs=Math.cos(state.yaw),sn=Math.sin(state.yaw);const f=dx*sn+dz*cs,side=dx*cs-dz*sn;if(f<=6)return null;const k=focal();return {x:W*.5+k*side/f,y:H*.51-k*y/f,f,dist:Math.hypot(dx,dz)}}
+function paintSky(){const p=palettes[state.color],g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,p.top);g.addColorStop(.57,p.mid);g.addColorStop(1,p.bottom);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);if(state.mode===0)return;
+ const layerCount=4;for(let i=0;i<layerCount;i++){const x=W*(.2+i*.2)+Math.sin(state.yaw*.49+i*2.2)*W*.1;const y=H*(.48+.032*Math.sin(i*2.1)),r=Math.max(W,H)*(.24+(i%2)*.05),gr=ctx.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,rgba(p.fog,.062));gr.addColorStop(.6,rgba(p.fog,.018));gr.addColorStop(1,rgba(p.fog,0));ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,r*2,r*2)}
+ for(let i=0;i<105;i++){const a=hash(i+7,1)*6.2831-Math.PI,angle=Math.atan2(Math.sin(a-state.yaw),Math.cos(a-state.y));if(Math.abs(angle)>1.1)continue;const y=H*(.5+(hash(i+17,4)-.5)*.38);const x=W*.5+Math.tan(angle)*focal();ctx.fillStyle=rgba(p.tint,.07+hash(i,90)*.13);ctx.fillRect(x,y,.7,.7)}
+ ctx.lineWidth=.65;for(let i=0;i<5;i++){ctx.strokeStyle=rgba(p.tint,.043+(i%2)*.012);ctx.beginPath();for(let x=0;x<W;x+=18){const y=H*(.464+.018*i)+Math.sin(x/W*8.8+i*2.8+state.yaw*.6)*3.1;if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke()}}
+function ghostGeometry(){if(state.mode!==2)return;
+ // Direction-fixed afterimages; NOT world-coordinate destinations or solid buildings.
+ const p=palettes[state.color];for(const [i,heading] of [-1.12,.29,1.6].entries()){const a=Math.atan2(Math.sin(heading-state.yaw),Math.cos(heading-state.y));if(Math.abs(a)>1.16)continue;const cx=W*.5+Math.tan(a)*focal(),cy=H*.49,rad=clamp(W*.095,42,140)*(i===1?1:.7),alpha=i===1?.13:.075;ctx.save();ctx.strokeStyle=rgba(p.tint,alpha);ctx.lineWidth=.9;ctx.setLineDash([9,20,4,15]);ctx.beginPath();ctx.ellipse(cx,cy,rad,rad*.18,-.3,.24,Math.PI*1.9);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-rad*.46,cy-rad*.28);ctx.lineTo(cx-rad*.26,cy-rad*.53);ctx.moveTo(cx+rad*.44,cy+rad*.05);ctx.lineTo(cx+rad*.6,cy+rad*.32);ctx.stroke();ctx.setLineDash([]);ctx.restore()}}
+function groundPoint(x,z){const p=project(x,z,-34);return p&&p.y>H*.52&&p.y<H*1.35?p:null}
+function paintNoise(){if(!state.noise)return;const strength=state.noise===1?.09:.22,step=52,limit=1100,p=palettes[state.color].tint;
+ const x0=Math.floor((state.x-limit)/step),x1=Math.ceil((state.x+limit)/step),z0=Math.floor((state.z-limit)/step),z1=Math.ceil((state.z+limit)/step);
+ for(let i=x0;i<=x1;i++)for(let j=z0;j<=z1;j++){let rand=hash(i,j),density=state.noise===1?.86:.71;if(rand<density)continue;const x=(i+hash(i+91,j)*.9)*step,z=(j+hash(i,j+9)*.9)*step,q=groundPoint(x,z);if(!q||q.x<0||q.x>W||q.y>H)continue;const fade=clamp((q.y-H*.53)/160,0,1)*clamp((1400-q.dist)/1100,0,1);ctx.fillStyle=rgba(p,strength*fade*(.6+.4*rand));const size=clamp(160/q.f,1,3.3);ctx.fillRect(q.x,q.y,size,size*.65)}}
+function paintFlow(){if(!state.flow)return;const p=palettes[state.color].tint,step=220,reach=1260;
+ for(let i=Math.floor((state.x-reach)/step);i<=Math.ceil((state.x+reach)/step);i++)for(let j=Math.floor((state.z-reach)/step);j<=Math.ceil((state.z+reach)/step);j++){
+ const seed=hash(i,j);if(seed<.24)continue;const repeat=state.flow===1?1:2;
+ for(let l=0;l<repeat;l++){const rnd=hash(i+12*l,j-32*l),a=rnd*Math.PI*2,x=(i+.08+.74*hash(i,j+l))*step,z=(j+.08+.77*hash(j,i+l))*step,len=85+seed*146,ex=x+Math.sin(a)*len,ez=z+Math.cos(a)*len;
+ const q0=groundPoint(x,z),q1=groundPoint(ex,ez);if(!q0||!q1||Math.max(q0.x,q1.x)<-10||Math.min(q0.x,q1.x)>W+10||Math.min(q0.y,q1.y)>H+10)continue;
+ const fade=clamp((Math.min(q0.y,q1.y)-H*.525)/170,0,1);if(!fade)continue;ctx.lineWidth=.85;ctx.strokeStyle=rgba(p,fade*(state.flow===1?.15:.28));ctx.beginPath();ctx.moveTo(q0.x,q0.y);ctx.lineTo(q1.x,q1.y);ctx.stroke();
+ const phase=(time*(.22+.12*seed)+rnd*7)%1,aa=clamp(phase-.13,0,1),bb=clamp(phase+.08,0,1);const p0=groundPoint(x+(ex-x)*aa,z+(ez-z)*aa),p1=groundPoint(x+(ex-x)*bb,z+(ez-z)*bb);if(!p0||!p1)continue;
+ ctx.lineWidth=4;ctx.strokeStyle=rgba(p,fade*(state.flow===1?.13:.21));ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();ctx.lineWidth=1.1;ctx.strokeStyle=rgba(p,fade*(state.flow===1?.5:.82));ctx.stroke();}}
+}
+function halo(x,y,r,clr,opacity){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(clr,opacity));g.addColorStop(.22,rgba(clr,opacity*.37));g.addColorStop(1,rgba(clr,0));ctx.fillStyle=g;ctx.fillRect(x-r,y-r,2*r,2*r)}
+function paintSignals(){const obs=[];for(const o of objects){const p=project(o.x,o.z,Math.sin(time*.67+o.z)*1.7);if(p&&p.dist<2200&&p.x>-100&&p.x<W+100)obs.push({o,p})}obs.sort((a,b)=>b.p.dist-a.p.dist);
+ for(const {o,p} of obs){const s=clamp(14*620/(p.f+280)*o.amp,2.4,30),alpha=clamp((2200-p.dist)/1000,.12,1);ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);
+ if(o.kind==='signal'){halo(0,0,s*2.4,[74,192,248],.25);halo(0,0,s*1.1,[72,212,253],.65);ctx.fillStyle='#a4e4ff';ctx.beginPath();ctx.arc(0,0,Math.max(1.3,s*.15),0,6.283);ctx.fill();ctx.strokeStyle='rgba(128,209,247,.3)';ctx.beginPath();ctx.arc(0,0,s*.6,0,6.283);ctx.stroke()}
+ else if(o.kind==='facility'){halo(0,0,s*1.7,[225,177,92],.19);ctx.strokeStyle='rgba(255,210,132,.91)';ctx.lineWidth=1.2;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,0,s*(.28+i*.22),0,6.283);ctx.stroke()}}
+ else{halo(0,0,s*1.8,[214,104,242],.21);ctx.strokeStyle='rgba(240,151,254,.92)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,s*.6,0,6.283);ctx.moveTo(-s*.8,0);ctx.lineTo(-s*.47,0);ctx.moveTo(s*.47,0);ctx.lineTo(s*.8,0);ctx.stroke()}
+ ctx.restore()}}
+let updateCount=0;
+function render(ts){const dt=Math.min((ts-last)/1000||0,.055);last=ts;time+=dt;tick(dt);paintSky();ghostGeometry();paintNoise();paintFlow();paintSignals();
+ if((++updateCount)%10===0){const deg=Math.round((state.yaw*180/Math.PI%360+360)%360);document.getElementById('readout').innerHTML=`位置 <b>${Math.round(state.x)}, ${Math.round(state.z)}</b>　方位 <b>${String(deg).padStart(3,'0')}°</b><div id="effectsText">${paletteNames[state.color]} / ノイズ${density[state.noise]} / 光${density[state.flow]}</div>`}
+ requestAnimationFrame(render)}updateButtons();requestAnimationFrame(render);
+// Expose a compact read-only snapshot for testing without affecting the experiment.
+window.__spaceStudyDebug=()=>({...state});
+})();
+</script>
+</body>
+</html>
