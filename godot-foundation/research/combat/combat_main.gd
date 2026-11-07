@@ -35,13 +35,13 @@ func _ready()->void:
 func _build_ui()->void:
     super._build_ui()
     pattern_toggle=_button("敵行動の実験：OFF",_toggle_patterns,196)
-    pattern_toggle.position=Vector2(380,112)
+    pattern_toggle.position=Vector2(380,146)
     root.add_child(pattern_toggle)
     # The original Foundation auto-forward button stays available to inherited code,
     # but the research UI has one explicit three-way movement selector instead.
     auto_button.hide()
     movement_select=OptionButton.new()
-    movement_select.position=Vector2(595,112)
+    movement_select.position=Vector2(380,195)
     movement_select.custom_minimum_size=Vector2(220,40)
     movement_select.size=Vector2(220,40)
     movement_select.focus_mode=Control.FOCUS_NONE

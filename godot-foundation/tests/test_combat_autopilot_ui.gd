@@ -13,6 +13,9 @@ func run()->void:
     check(demo.movement_select!=null and demo.movement_select.item_count==3,"one explicit three-choice movement selector")
     check(demo.movement_mode=="manual" and not demo.auto_forward and not demo.game.auto_battle_enabled,"startup defaults to manual navigation")
     check(not demo.auto_button.visible,"old dual-toggle UI hidden without changing Foundation code")
+    check(demo.pattern_toggle.position.y>=140.0 and demo.movement_select.position.y>demo.pattern_toggle.position.y+40.0,"movement selectors do not overlap Foundation top buttons or each other")
+    check(demo.movement_select.position.x>=370.0 and demo.movement_select.position.x+demo.movement_select.size.x<658.0,"movement selector clears combat side panel and 838px minimap")
+
     check(demo.game.phase=="travel" and not demo.game.allow_save,"natural journey no-save fixture")
     demo.movement_select.item_selected.emit(1)
     check(demo.movement_mode=="cruise" and demo.auto_forward and not demo.game.auto_battle_enabled,"choice cruise enables auto-forward without target pursuit")
