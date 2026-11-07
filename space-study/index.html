@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
 <meta name="theme-color" content="#03070d" />
-<title>CLOUD / PROBE | 背景比較模型 v0.3</title>
+<title>CLOUD / PROBE | 既存エフェクト技法比較 v0.4（研究）</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#d9edf0;background:#02060a}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;-webkit-text-size-adjust:100%}
@@ -35,20 +35,21 @@ button{appearance:none;border:1px solid rgba(102,153,166,.43);color:#b9d7dd;back
 </head>
 <body>
 <canvas id="view" aria-label="一人称探索風の背景比較"></canvas><div class="soft-edge"></div><div class="overlay-cross"></div>
-<header class="header"><div><h1>CLOUD / PROBE <span style="opacity:.55">背景研究</span></h1><p class="subtitle">SPACE STUDY v0.3 / iPHONE TOUCH</p></div><div class="status"><span>BASE SPACE</span><strong id="currentMode">薄い情報空間</strong></div></header>
+<header class="header"><div><h1>CLOUD / PROBE <span style="opacity:.55">背景研究</span></h1><p class="subtitle">SPACE STUDY v0.4 / EFFECT TECHNIQUES</p></div><div class="status"><span>BASE SPACE</span><strong id="currentMode">薄い情報空間</strong></div></header>
 <details class="switcher" id="settings"><summary>背景を切り替える</summary><div class="settings-inner">
 <div><div class="setting-name">背景密度</div><div class="choice-row" role="group" aria-label="背景密度"><button data-set="mode" data-value="0" type="button">ほぼ空</button><button data-set="mode" data-value="1" type="button">薄い情報</button><button data-set="mode" data-value="2" type="button">遠景残像</button></div></div>
 <div><div class="setting-name">ベース色</div><div class="choice-row" role="group" aria-label="ベース色"><button data-set="color" data-value="0" type="button">黒</button><button data-set="color" data-value="1" type="button">暗青</button><button data-set="color" data-value="2" type="button">青緑</button></div></div>
 <div><div class="setting-name">下方ノイズ</div><div class="choice-row" role="group" aria-label="下方ノイズ"><button data-set="noise" data-value="0" type="button">なし</button><button data-set="noise" data-value="1" type="button">弱</button><button data-set="noise" data-value="2" type="button">中</button></div></div>
 <div><div class="setting-name">下方の光の流れ</div><div class="choice-row" role="group" aria-label="下方の光の流れ"><button data-set="flow" data-value="0" type="button">なし</button><button data-set="flow" data-value="1" type="button">弱</button><button data-set="flow" data-value="2" type="button">中</button></div></div>
-<div class="hint">設定は独立。切り替えても現在位置は変わらない。画面を左右にスワイプして旋回もできるよ。</div>
+<div><div class="setting-name">公開エフェクト技法の比較</div><div class="choice-row" role="group" aria-label="公開エフェクト技法"><button data-set="effect" data-value="0" type="button">従来</button><button data-set="effect" data-value="1" type="button">情報の海</button><button data-set="effect" data-value="2" type="button">光の回路</button><button data-set="effect" data-value="3" type="button">デジタル残響</button></div></div><div class="hint">3つの効果は公開CC0シェーダーの技法をHTML向けに再構成した研究用。従来モードに戻せる。各効果で同じ位置・向き・探索信号を比較。</div>
 </div></details>
 <div class="readout" id="readout" aria-live="off">位置 <b>0, 0</b>　方位 <b>000°</b><div id="effectsText">黒 / ノイズ弱 / 光弱</div></div>
 <div class="nav"><div class="pad"><button id="left" type="button" aria-label="左旋回">↶<small>左旋回</small></button><button id="forward" type="button" aria-label="前進">↑<small>前進</small></button><button id="back" type="button" aria-label="後退">↓<small>後退</small></button><button id="right" type="button" aria-label="右旋回">↷<small>右旋回</small></button></div><div class="aux"><button id="auto" type="button" aria-pressed="false">▶ 自動前進</button><button id="reset" type="button">↺ 初期位置</button></div></div>
+<script src="./effect_adapter.js"></script>
 <script>
 (()=>{'use strict';
 const canvas=document.getElementById('view'),ctx=canvas.getContext('2d',{alpha:false});
-const state={mode:1,color:0,noise:1,flow:1,auto:false,x:0,z:0,yaw:0};
+const state={mode:1,color:0,noise:1,flow:1,effect:0,auto:false,x:0,z:0,yaw:0};
 const names=['ほぼ空','薄い情報空間','遠景残像'];
 const paletteNames=['黒','暗青','青緑'];
 const density=['なし','弱','中'];
@@ -70,7 +71,7 @@ const hash=(a,b)=>{const v=Math.sin(a*127.1+b*311.7)*43758.5453;return v-Math.fl
 const rgba=(rgb,a)=>`rgba(${rgb[0]},${rgb[1]},${rgb[2]},${clamp(a,0,1)})`;
 function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0)}
 window.addEventListener('resize',resize);resize();
-function updateButtons(){for(const el of document.querySelectorAll('[data-set]')){el.setAttribute('aria-pressed',String(state[el.dataset.set]===Number(el.dataset.value)))}document.getElementById('currentMode').textContent=names[state.mode];document.getElementById('effectsText').textContent=`${paletteNames[state.color]} / ノイズ${density[state.noise]} / 光${density[state.flow]}`;for(const k of ['mode','color','noise','flow'])document.body.dataset[k]=state[k];document.getElementById('auto').setAttribute('aria-pressed',String(state.auto))}
+function updateButtons(){for(const el of document.querySelectorAll('[data-set]')){el.setAttribute('aria-pressed',String(state[el.dataset.set]===Number(el.dataset.value)))}document.getElementById('currentMode').textContent=names[state.mode];document.getElementById('effectsText').textContent=`${paletteNames[state.color]} / ${['従来','情報の海','光の回路','デジタル残響'][state.effect]} / ノイズ${density[state.noise]} / 光${density[state.flow]}`;for(const k of ['mode','color','noise','flow','effect'])document.body.dataset[k]=state[k];document.getElementById('auto').setAttribute('aria-pressed',String(state.auto))}
 function setOption(k,v){state[k]=v;updateButtons()}
 for(const b of document.querySelectorAll('[data-set]'))b.addEventListener('click',()=>setOption(b.dataset.set,Number(b.dataset.value)));
 for(const key of ['forward','back','left','right']){const el=document.getElementById(key);el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);held.add(key);el.classList.add('pressed')});const end=()=>{held.delete(key);el.classList.remove('pressed')};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end)}
@@ -114,7 +115,7 @@ function paintSignals(){const obs=[];for(const o of objects){const p=project(o.x
  else{halo(0,0,s*1.8,[214,104,242],.21);ctx.strokeStyle='rgba(240,151,254,.92)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,0,s*.6,0,6.283);ctx.moveTo(-s*.8,0);ctx.lineTo(-s*.47,0);ctx.moveTo(s*.47,0);ctx.lineTo(s*.8,0);ctx.stroke()}
  ctx.restore()}}
 let updateCount=0;
-function render(ts){const dt=Math.min((ts-last)/1000||0,.055);last=ts;time+=dt;tick(dt);paintSky();ghostGeometry();paintNoise();paintFlow();paintSignals();
+function render(ts){const dt=Math.min((ts-last)/1000||0,.055);last=ts;time+=dt;tick(dt);paintSky();ghostGeometry();if(state.effect===0){paintNoise();paintFlow()}else{CloudProbeFx.paint(ctx,state,W,H,time)}paintSignals();
  if((++updateCount)%10===0){const deg=Math.round((state.yaw*180/Math.PI%360+360)%360);document.getElementById('readout').innerHTML=`位置 <b>${Math.round(state.x)}, ${Math.round(state.z)}</b>　方位 <b>${String(deg).padStart(3,'0')}°</b><div id="effectsText">${paletteNames[state.color]} / ノイズ${density[state.noise]} / 光${density[state.flow]}</div>`}
  requestAnimationFrame(render)}updateButtons();requestAnimationFrame(render);
 // Expose a compact read-only snapshot for testing without affecting the experiment.
