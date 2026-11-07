@@ -7,6 +7,8 @@ COMBAT_RESEARCH_READY phase=travel fixture=false patterns=false move=manual
 PASS MODE_UI one explicit three-choice movement selector
 PASS MODE_UI startup defaults to manual navigation
 PASS MODE_UI old dual-toggle UI hidden without changing Foundation code
+PASS MODE_UI movement selectors do not overlap Foundation top buttons or each other
+PASS MODE_UI movement selector clears combat side panel and 838px minimap
 PASS MODE_UI natural journey no-save fixture
 PASS MODE_UI choice cruise enables auto-forward without target pursuit
 PASS MODE_UI selector and inherited controls stay synchronized in cruise
@@ -21,4 +23,4 @@ PASS MODE_UI switching battle to manual cancels target and automatic movement
 PASS MODE_UI selector and inherited controls stay synchronized in manual
 PASS MODE_UI reverse/stop common handler returns selector to manual
 PASS MODE_UI movement-mode study cannot overwrite normal save
-MODE_UI SUMMARY checks=17 failures=0
+MODE_UI SUMMARY checks=19 failures=0
